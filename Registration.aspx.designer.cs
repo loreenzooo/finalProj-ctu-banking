@@ -11,7 +11,7 @@ namespace Main
 {
 
 
-    public partial class Login
+    public partial class Registration
     {
 
         /// <summary>
@@ -22,6 +22,24 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+
+        /// <summary>
+        /// fullNameTxt control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox fullNameTxt;
+
+        /// <summary>
+        /// emailTxt control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox emailTxt;
 
         /// <summary>
         /// usernameTxt control.
@@ -42,21 +60,21 @@ namespace Main
         protected global::System.Web.UI.WebControls.TextBox passwordTxt;
 
         /// <summary>
-        /// loginBtn control.
+        /// confirmPassTxt control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button loginBtn;
+        protected global::System.Web.UI.WebControls.TextBox confirmPassTxt;
 
         /// <summary>
-        /// createAcc control.
+        /// registerBtn control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button createAcc;
+        protected global::System.Web.UI.WebControls.Button registerBtn;
     }
 }

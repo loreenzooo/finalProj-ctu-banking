@@ -1,0 +1,89 @@
+﻿body, form{
+    height:100%;
+}
+
+body {
+    background-color: #121A2F;
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+    
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:100vh;
+}
+#login-container {
+    background-color: #202F55;
+    width: 500px;
+    height: 500px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+#form {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+    height: 100%; 
+    padding: 0 40px; 
+}
+
+.login-input {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 16px;
+    background-color: #f0f2f5; 
+    border: 1px solid #dddfe2;
+    border-radius: 12px; 
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 15px; 
+    transition: border 0.2s ease-in-out;
+}
+.login-input:focus {
+        border: 1px solid #1877f2; 
+}
+
+.login-input::placeholder {
+        color: #8d949e;
+}
+
+#loginBtn {
+    background-color: #4163BF !important; 
+    border: none;
+}
+
+#createAcc {
+    background-color: #2DD253 !important;
+    border: none;
+}
+
+#createAcc, #loginBtn {
+    margin-top: 20px;
+    color: #E7E7E7;
+    padding: 12px; 
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    
+    transition: all 0.3s ease;
+}
+
+    #loginBtn:hover {
+        background-color: #34509D;
+        
+    }
+
+    #createAcc:hover {
+        background-color: #25AD44;
+    }
+
+    #loginBtn:hover, #createAcc:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+    }
+
+
+

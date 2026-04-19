@@ -7,19 +7,14 @@ using System.Web.UI.WebControls;
 
 namespace Main
 {
-    public partial class Login : System.Web.UI.Page
+    public partial class Registration : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
 
         }
 
-        protected void createAcc_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("Registration.aspx");
-        }
-
-        protected void loginBtn_Click(object sender, EventArgs e)
+        protected void registerBtn_Click(object sender, EventArgs e)
         {
 
         }

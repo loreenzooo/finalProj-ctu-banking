@@ -4,12 +4,26 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>CTU - Equipment Tracker</title>
+    <title>Login - CTU Lab Equipment Tracker</title>
+    <link href="../Content/Login.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <form id="form1" runat="server">
-        <div>
+
+        <div class="container">
+    <div id="login-container">
+        
+        <div id="form">
+            <h2 style="color:#EBA800;">Login</h2>
+         
+            <asp:TextBox ID="usernameTxt" runat="server" CssClass="login-input" placeholder="Email or Username"></asp:TextBox>
+            <asp:TextBox ID="passwordTxt" runat="server" CssClass="login-input" TextMode="Password" placeholder="Password"></asp:TextBox>
+
+            <asp:Button ID="loginBtn" runat="server" CssClass="login-input" Text="Login" OnClick="loginBtn_Click" />
+            <asp:Button ID="createAcc" runat="server" CssClass="login-input" Text="Create Account" PostBackUrl="~/Registration.aspx" OnClick="createAcc_Click" />
         </div>
+    </div>
+</div>
     </form>
 </body>
 </html>
