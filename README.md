@@ -1,32 +1,34 @@
-# IT Lab Equipment Tracker 🖥️
+# Simple Banking WebForms Application
 
-A digital checkout system designed to replace manual logbooks in university computer laboratories. This web application allows IT students to easily borrow and track lab equipment (like crimping tools, mice, and keyboards) while ensuring laboratory custodians have a clear, accurate overview of current inventory.
+A web-based banking simulation system featuring user authentication, account management, and transaction processing with specific business logic constraints.
 
-## 🎯 Features
+## 📋 Project Overview
+This project implements a secure banking portal where users can register, manage their accounts, and perform financial transactions (Deposits and Withdrawals) under strictly defined banking rules.
 
-* **Student Authentication:** Secure User Registration and Login system.
-* **Account Management:** Users can update their passwords to maintain account security.
-* **Student Dashboard:** Displays the active user's Student ID (Account Number), Name, and Date Registered.
-* **Equipment Checkout (Create/Read):** Students can submit a "Borrow Request" by selecting available equipment from a dropdown list.
-* **Inventory Tracking:** A real-time table displaying items the student currently holds versus items they have successfully returned.
-* **Request Cancellation (Delete):** Students can cancel a pending borrow request before picking up the item from the custodian.
+## 🚀 Key Features
 
-## 🛠️ Technology Stack
+### 1. User Authentication & Management
+* **User Registration:** Secure form to create a new banking profile.
+* **User Login:** Authenticated access to the banking system.
+* **User Logout:** Secure session termination.
+* **Change Password:** Functionality to update account security credentials.
 
-* **Front-End:** HTML5, CSS3, ASP.NET Web Forms
-* **Back-End:** C#
-* **Database:** Microsoft SQL Server
-* **Architecture:** Code-Behind Pattern
+### 2. User Dashboard
+Displays real-time account information for the currently signed-in user:
+* **Account Number:** Unique system-generated ID.
+* **Full Name:** User's registered name.
+* **Date Registered:** The timestamp of account creation.
+* **Current Balance:** Live view of available funds.
 
-## 🗄️ Database Structure
+### 3. Banking Transactions (Business Logic)
 
-The system is built on a relational SQL database utilizing three core tables:
-1. **Users Table:** Manages student credentials and basic demographic information.
-2. **Equipment Table:** Tracks the inventory and availability status (Boolean) of lab items.
-3. **BorrowRequests Table:** Links students to specific equipment using Foreign Keys, tracking timestamps and request statuses (Pending, Picked Up, Returned).
+#### **Deposit System**
+* **Min/Max:** Minimum of 100.00 and Maximum of 2,000.00 per transaction.
+* **Denomination:** Amounts must be divisible by 100.00.
+* **Account Ceiling:** A user's total balance cannot exceed 10,000.00.
 
-## 🚀 How to Run Locally
-
-1. Clone the repository to your local machine:
-   ```bash
-   git clone [https://github.com/loreenzooo/ctu-lab-equipment-tracker.git](https://github.com/loreenzooo/ctu-lab-equipment-tracker.git)
+#### **Withdrawal System**
+* **Pre-check:** Displays the current balance before the transaction starts.
+* **Min/Max:** Minimum of 100.00 and Maximum of 2,000.00 per transaction.
+* **Denomination:** Amounts must be divisible by 100.00.
+* **Validation:** Prevents withdrawal if funds are insufficient.
