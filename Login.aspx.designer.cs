@@ -33,6 +33,15 @@ namespace Main
         protected global::System.Web.UI.WebControls.TextBox usernameTxt;
 
         /// <summary>
+        /// rfvUsernameTxt control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvUsernameTxt;
+
+        /// <summary>
         /// passwordTxt control.
         /// </summary>
         /// <remarks>
@@ -40,6 +49,15 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox passwordTxt;
+
+        /// <summary>
+        /// rfvPasswordTxt control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvPasswordTxt;
 
         /// <summary>
         /// loginBtn control.

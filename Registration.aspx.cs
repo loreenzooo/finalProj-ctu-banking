@@ -16,6 +16,11 @@ namespace Main
 
         protected void registerBtn_Click(object sender, EventArgs e)
         {
+            string firstName = firstNameTxt.Text.Trim();
+            string lastName = lastNameTxt.Text.Trim();
+            string email = emailTxt.Text.Trim();
+            string password = passwordTxt.Text.Trim();
+
 
         }
     }

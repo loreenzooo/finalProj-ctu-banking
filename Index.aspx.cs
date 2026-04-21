@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Main
 {
-    public partial class _Default : Page
+    public partial class Index : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
