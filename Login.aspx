@@ -23,11 +23,14 @@
                         ForeColor="Red"
                         Display="Dynamic"></asp:RequiredFieldValidator>
                     <asp:TextBox ID="passwordTxt" runat="server" CssClass="login-input" TextMode="Password" placeholder="Password"></asp:TextBox>
+
                     <asp:RequiredFieldValidator ID="rfvPasswordTxt" runat="server"
                         ControlToValidate="passwordTxt"
                         ErrorMessage="Password is required!"
                         ForeColor="Red"
                         Display="Dynamic"></asp:RequiredFieldValidator>
+
+                    <asp:Label ID="errorLbl" runat="server" ForeColor="#ff4d4d" Font-Bold="true"></asp:Label>
 
                     <asp:Button ID="loginBtn" runat="server" CssClass="login-input" Text="Login" OnClick="loginBtn_Click" />
                     <asp:Button ID="createAcc" runat="server" CssClass="login-input" Text="Create Account" OnClick="createAcc_Click" CausesValidation="false" />

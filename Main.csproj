@@ -139,6 +139,7 @@
     <Content Include="Content\bootstrap\bootstrap-5.2.3-dist\js\bootstrap.esm.min.js" />
     <Content Include="Content\bootstrap\bootstrap-5.2.3-dist\js\bootstrap.js" />
     <Content Include="Content\bootstrap\bootstrap-5.2.3-dist\js\bootstrap.min.js" />
+    <Content Include="Content\styles\Dashboard.css" />
     <Content Include="Content\styles\Login.css" />
     <Content Include="Content\styles\Registration.css" />
     <Content Include="Content\Site.css" />
@@ -234,6 +235,7 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Classes\DashboardManager.cs" />
     <Compile Include="Classes\TransactionManager.cs" />
     <Compile Include="Classes\UserManager.cs" />
     <Compile Include="Classes\DBConnection.cs" />

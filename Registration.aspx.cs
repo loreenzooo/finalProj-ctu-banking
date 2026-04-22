@@ -26,7 +26,7 @@ namespace Main
 
         protected void registerBtn_Click(object sender, EventArgs e)
         {
-            if (Page.IsValid)
+            if (Page.IsValid)             
             {
                 string firstName = firstNameTxt.Text.Trim();
                 string lastName = lastNameTxt.Text.Trim();

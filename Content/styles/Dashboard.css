@@ -1,0 +1,90 @@
+﻿/* Base & Reset */
+html, body, form {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #121A2F;
+    color: #E7E7E7;
+}
+
+/* Top Header */
+.top-header {
+    height: 60px;
+    background-color: #202F55;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+    .top-header h1 {
+        margin: 0;
+        font-size: 20px;
+        color: #EBA800;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+/* Centered Layout for the Table */
+.content-container {
+    max-width: 1200px;
+    margin: 40px auto; /* Centers the content */
+    padding: 0 20px;
+}
+
+/* Standard Card Container */
+.card {
+    background-color: #202F55;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.table-header-title {
+    color: #EBA800;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #121A2F;
+    padding-bottom: 15px;
+}
+
+/* GridView / Dark Table Styling */
+.grid-view {
+    width: 100%;
+    border-collapse: collapse;
+    color: #E7E7E7;
+}
+
+    .grid-view th,
+    .grid-view td {
+        padding: 14px 15px;
+        text-align: left;
+        border-bottom: 1px solid #121A2F;
+    }
+
+.grid-header {
+    background-color: #4163BF;
+    color: #FFFFFF;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+.grid-row {
+    background-color: #202F55;
+    transition: background-color 0.2s ease;
+}
+
+.grid-alt-row {
+    background-color: #1A2645;
+    transition: background-color 0.2s ease;
+}
+
+/* Hover Effect */
+.grid-view tr:hover td {
+    background-color: #34509D;
+    color: #FFF;
+}

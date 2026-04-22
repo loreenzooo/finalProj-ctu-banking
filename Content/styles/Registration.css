@@ -9,6 +9,8 @@
     /* override login.css alignment */
     #reg-container #form {
         align-items: stretch;
+        height: auto; /* Stops the form from stretching vertically */
+        padding: 0; /* Removes the double horizontal padding */
     }
 
 #form h2 {

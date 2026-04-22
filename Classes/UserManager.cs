@@ -5,6 +5,7 @@ using System.Web;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Web.Configuration;
+using System.Text.RegularExpressions;
 
 namespace Main.Classes
 {
@@ -44,6 +45,30 @@ namespace Main.Classes
             }
             return null;
         }
+
+        // Checks if the user is in the registered users table
+        public bool UserLogin(int pin, string password)
+        {
+            using (SqlConnection con = DBConnection.GetConnection())
+            {
+                con.Open();
+
+                string query = @"
+                               SELECT COUNT(1)
+                                 FROM Users
+                                 WHERE account_number = @pin AND password_hash = @password
+                               ";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@pin", pin);
+                    cmd.Parameters.AddWithValue("@password", password);
+
+                    int matchCtr = Convert.ToInt32(cmd.ExecuteScalar());
+                    return matchCtr > 0;
+                }
+            }
+           
+        } 
         
         // Check if email is unique
         public bool IsEmailUnique(string email)
