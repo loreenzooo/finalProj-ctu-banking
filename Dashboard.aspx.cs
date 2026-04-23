@@ -20,9 +20,6 @@ namespace Main
         {
             if (!IsPostBack)
             {
-                // TODO: Execute your SELECT * FROM Users query 
-                // and bind it to gvRegisteredUsers here.
-
                 BindUserGrid();
             }
         }
@@ -31,8 +28,6 @@ namespace Main
             DashboardManager dbManager = new DashboardManager();
             gvRegisteredUsers.DataSource = dbManager.GetRegisteredUsers();
             gvRegisteredUsers.DataBind();
-
-
         }
     }
 }

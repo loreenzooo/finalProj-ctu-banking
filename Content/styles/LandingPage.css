@@ -1,0 +1,211 @@
+﻿/* Base & Reset */
+html, body, form {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #121A2F;
+    color: #E7E7E7;
+    overflow: hidden; /* Prevents full page scroll, scrolls content instead */
+}
+
+/* Flexbox Layout Structure */
+.layout-wrapper {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 280px;
+    background-color: #202F55;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.sidebar-brand {
+    padding: 20px 30px;
+    border-bottom: 2px solid #121A2F;
+    color: #EBA800;
+}
+
+    .sidebar-brand h2 {
+        margin: 0;
+    }
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+
+.menu-item {
+    padding: 15px 30px;
+    color: #E7E7E7;
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+    .menu-item:hover {
+        background-color: #1A2645;
+    }
+
+    /* Controlled dynamically from C# */
+    .menu-item.active {
+        background-color: #4163BF;
+        border-left: 4px solid #EBA800;
+        font-weight: 600;
+    }
+
+/* Main Content Area */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background-color: #121A2F;
+}
+
+/* Top Header */
+.top-header {
+    height: 60px;
+    background-color: #202F55;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+    .top-header h1 {
+        margin: 0;
+        font-size: 20px;
+        color: #EBA800;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+/* Centered Layout for the Content */
+.content-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Standard Card Container */
+.card {
+    background-color: #202F55;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    margin-bottom: 30px;
+}
+
+/* Shared Filter Section */
+.filter-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 20px;
+    padding: 20px 30px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+    .filter-group label {
+        font-size: 13px;
+        color: #A0AABF;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+.filter-input {
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid #4163BF;
+    background-color: #121A2F;
+    color: #E7E7E7;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    min-width: 150px;
+}
+
+    .filter-input:focus {
+        border-color: #EBA800;
+    }
+
+.btn-filter {
+    padding: 11px 25px;
+    background-color: #EBA800;
+    color: #121A2F;
+    border: none;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.2s ease;
+}
+
+    .btn-filter:hover {
+        background-color: #C28B00;
+    }
+
+.table-header-title {
+    color: #EBA800;
+    font-size: 22px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #121A2F;
+    padding-bottom: 15px;
+}
+
+/* GridView / Dark Table Styling */
+.grid-view {
+    width: 100%;
+    border-collapse: collapse;
+    color: #E7E7E7;
+}
+
+    .grid-view th,
+    .grid-view td {
+        padding: 14px 15px;
+        text-align: left;
+        border-bottom: 1px solid #121A2F;
+    }
+
+.grid-header {
+    background-color: #4163BF;
+    color: #FFFFFF;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+.grid-row {
+    background-color: #202F55;
+    transition: background-color 0.2s ease;
+}
+
+.grid-alt-row {
+    background-color: #1A2645;
+    transition: background-color 0.2s ease;
+}
+
+/* Hover Effect - CSS Only */
+.grid-view tr:hover td {
+    background-color: #34509D;
+    color: #FFF;
+}
