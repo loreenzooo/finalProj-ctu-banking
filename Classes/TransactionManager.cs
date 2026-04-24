@@ -167,14 +167,29 @@ namespace Main.Classes
             DataTable dt = new DataTable();
             using (SqlConnection conn = DBConnection.GetConnection())
             {
-                string query = @"SELECT transaction_time AS Date, transaction_type AS Description, 
-                                 CASE WHEN sender_account = @AccountNo THEN amount ELSE NULL END AS Debit, 
-                                 CASE WHEN receiver_account = @AccountNo THEN amount ELSE NULL END AS Credit, 
-                                 (SELECT balance FROM Users WHERE account_number = @AccountNo) AS Balance 
-                                 FROM Transactions WHERE (sender_account = @AccountNo OR receiver_account = @AccountNo)";
+                string query = @"
+            SELECT 
+                transaction_time AS Date,
+                transaction_type AS Description,
+                CASE WHEN sender_account = @AccountNo THEN amount ELSE NULL END AS Debit,
+                CASE WHEN receiver_account = @AccountNo THEN amount ELSE NULL END AS Credit,
+                SUM(
+                    CASE 
+                        WHEN receiver_account = @AccountNo THEN amount   -- Deposit / received = +
+                        WHEN sender_account   = @AccountNo THEN -amount  -- Withdraw / sent    = -
+                        ELSE 0 
+                    END
+                ) OVER (
+                    ORDER BY transaction_time ASC, transaction_id ASC
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                ) AS Balance
+            FROM Transactions
+            WHERE (sender_account = @AccountNo OR receiver_account = @AccountNo)";
+
                 if (!string.IsNullOrEmpty(fromDate)) query += " AND transaction_time >= @FromDate";
                 if (!string.IsNullOrEmpty(toDate)) query += " AND transaction_time <= @ToDate";
-                query += " ORDER BY transaction_time DESC";
+
+                query += " ORDER BY transaction_time DESC, transaction_id DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
