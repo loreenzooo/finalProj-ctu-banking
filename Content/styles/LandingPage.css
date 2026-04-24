@@ -1,4 +1,6 @@
-﻿/* Base & Reset */
+﻿/* ==========================================
+   Base & Reset
+   ========================================== */
 html, body, form {
     height: 100vh;
     margin: 0;
@@ -15,7 +17,9 @@ html, body, form {
     width: 100%;
 }
 
-/* --- Sidebar --- */
+/* ==========================================
+   Sidebar
+   ========================================== */
 .sidebar {
     width: 280px;
     background-color: #202F55;
@@ -39,6 +43,14 @@ html, body, form {
     font-size: 16px;
     transition: all 0.3s ease;
     border-left: 4px solid transparent;
+    background: none;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
 }
 
     .menu-item:hover {
@@ -56,7 +68,9 @@ html, body, form {
     margin-top: auto;
 }
 
-/* --- Main Content & Header --- */
+/* ==========================================
+   Main Content & Header
+   ========================================== */
 .main-content {
     flex-grow: 1;
     display: flex;
@@ -72,6 +86,7 @@ html, body, form {
     justify-content: space-between;
     padding: 0 40px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
 }
 
 .header-left h2 {
@@ -106,7 +121,9 @@ html, body, form {
     font-size: 18px;
 }
 
-/* --- Content Containers --- */
+/* ==========================================
+   Content Containers
+   ========================================== */
 .content-container {
     max-width: 1200px;
     margin: 30px auto;
@@ -123,7 +140,9 @@ html, body, form {
     margin-bottom: 30px;
 }
 
-/* --- Container 1: Action Buttons --- */
+/* ==========================================
+   Action Buttons
+   ========================================== */
 .action-buttons {
     display: flex;
     gap: 15px;
@@ -172,6 +191,7 @@ html, body, form {
     background-color: #121A2F;
     color: #E7E7E7;
     outline: none;
+    box-sizing: border-box;
 }
 
     .form-input:focus {
@@ -186,9 +206,71 @@ html, body, form {
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-/* --- Container 2: Tab Buttons --- */
+    .btn-submit:hover {
+        background-color: #25b347;
+    }
+
+/* Cancel button */
+.btn-filter {
+    background-color: #4163BF;
+    color: #FFF;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+    .btn-filter:hover {
+        background-color: #34509D;
+    }
+
+/* ==========================================
+   Receiver Info Panel (Send CloudMoney)
+   ========================================== */
+.receiver-info-panel {
+    width: 100%;
+    max-width: 300px;
+    background-color: #121A2F;
+    border: 1px solid #34509D;
+    border-radius: 8px;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .receiver-info-panel .info-label {
+        font-size: 12px;
+        color: #8d949e;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .receiver-info-panel .info-value {
+        font-size: 15px;
+        color: #E7E7E7;
+        font-weight: 600;
+    }
+
+        .receiver-info-panel .info-value.highlight {
+            color: #EBA800;
+        }
+
+.receiver-info-divider {
+    border: none;
+    border-top: 1px solid #34509D;
+    margin: 4px 0;
+}
+
+/* ==========================================
+   Tab Buttons
+   ========================================== */
 .tab-buttons {
     display: flex;
     border-bottom: 2px solid #121A2F;
@@ -203,6 +285,11 @@ html, body, form {
     font-weight: 600;
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    cursor: pointer;
 }
 
     .tab-btn:hover {
@@ -214,7 +301,9 @@ html, body, form {
         border-bottom: 3px solid #EBA800;
     }
 
-/* --- Centered Filter Form (Matching Reference Image) --- */
+/* ==========================================
+   Centered Filter Form
+   ========================================== */
 .centered-filter-form {
     display: flex;
     flex-direction: column;
@@ -253,6 +342,10 @@ html, body, form {
     outline: none;
 }
 
+    .filter-input-centered:focus {
+        border-color: #EBA800;
+    }
+
 .filter-actions {
     display: flex;
     align-items: center;
@@ -261,23 +354,33 @@ html, body, form {
 }
 
 .btn-list {
-    background-color: #5CB85C; /* Green matching reference */
+    background-color: #5CB85C;
     color: #FFF;
     border: none;
     padding: 8px 24px;
     border-radius: 4px;
     font-weight: 600;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.view-dashboard-text {
-    color: #4163BF;
+    .btn-list:hover {
+        background-color: #4cae4c;
+    }
+
+/* Date validation error message */
+.date-error {
+    color: #ff6b6b;
+    font-size: 13px;
     font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
-/* --- GridView Styling --- */
+/* ==========================================
+   GridView Styling
+   ========================================== */
 .grid-view {
     width: 100%;
     border-collapse: collapse;
@@ -307,59 +410,5 @@ html, body, form {
 
 .grid-view tr:hover td {
     background-color: #34509D;
-}
-/* --- Receiver Info Panel (Fix #8) --- */
-.receiver-info-panel {
-    width: 100%;
-    max-width: 300px;
-    background-color: #121A2F;
-    border: 1px solid #34509D;
-    border-radius: 8px;
-    padding: 15px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-    .receiver-info-panel .info-label {
-        font-size: 12px;
-        color: #8d949e;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .receiver-info-panel .info-value {
-        font-size: 15px;
-        color: #E7E7E7;
-        font-weight: 600;
-    }
-
-        .receiver-info-panel .info-value.highlight {
-            color: #EBA800;
-        }
-
-.receiver-info-divider {
-    border: none;
-    border-top: 1px solid #34509D;
-    margin: 4px 0;
-}
-
-/* --- Date validation error message --- */
-.date-error {
-    color: #ff6b6b;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 5px;
-}
-
-.btn-filter {
-    background-color: #4163BF;
-    color: #FFF;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
+    cursor: default;
 }

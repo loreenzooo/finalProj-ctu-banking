@@ -5,8 +5,65 @@
 <head runat="server">
     <title>CTU - E Wallet</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
-    <link href="../Content/styles/LandingPage.css" rel="stylesheet" type="text/css" />
-  
+    <link href="Content/styles/LandingPage.css" rel="stylesheet" type="text/css" />
+    <style>
+        /* --- Receiver Info Panel --- */
+        .receiver-info-panel {
+            width: 100%;
+            max-width: 300px;
+            background-color: #121A2F;
+            border: 1px solid #34509D;
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .receiver-info-panel .info-label {
+            font-size: 12px;
+            color: #8d949e;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .receiver-info-panel .info-value {
+            font-size: 15px;
+            color: #E7E7E7;
+            font-weight: 600;
+        }
+
+        .receiver-info-panel .info-value.highlight {
+            color: #EBA800;
+        }
+
+        .receiver-info-divider {
+            border: none;
+            border-top: 1px solid #34509D;
+            margin: 4px 0;
+        }
+
+        /* --- Date validation error --- */
+        .date-error {
+            color: #ff6b6b;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* --- Cancel button --- */
+        .btn-filter {
+            background-color: #4163BF;
+            color: #FFF;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -35,6 +92,7 @@
                 <div class="content-container">
                     <asp:MultiView ID="mvMainContent" runat="server" ActiveViewIndex="0">
 
+                        <%-- ==================== DASHBOARD VIEW ==================== --%>
                         <asp:View ID="vwDashboardStats" runat="server">
                             <div class="card" style="max-width: 600px; margin: 0 auto;">
                                 <h2 class="table-header-title">My Dashboard</h2>
@@ -48,7 +106,10 @@
                             </div>
                         </asp:View>
 
+                        <%-- ==================== MANAGE FUNDS VIEW ==================== --%>
                         <asp:View ID="vwManageFunds" runat="server">
+
+                            <%-- Action Buttons + Panels --%>
                             <div class="card action-container">
                                 <div class="action-buttons">
                                     <asp:Button ID="btnShowDeposit" runat="server" Text="Deposit" CssClass="action-btn" OnClick="Action_Click" CommandArgument="0" />
@@ -57,6 +118,8 @@
                                 </div>
 
                                 <asp:MultiView ID="mvActions" runat="server" ActiveViewIndex="-1">
+
+                                    <%-- DEPOSIT --%>
                                     <asp:View ID="vwDeposit" runat="server">
                                         <div class="action-panel">
                                             <h3>Deposit Funds</h3>
@@ -66,6 +129,7 @@
                                         </div>
                                     </asp:View>
 
+                                    <%-- WITHDRAW --%>
                                     <asp:View ID="vwWithdraw" runat="server">
                                         <div class="action-panel">
                                             <h3>Withdraw Funds</h3>
@@ -76,18 +140,18 @@
                                         </div>
                                     </asp:View>
 
+                                    <%-- SEND CLOUDMONEY --%>
                                     <asp:View ID="vwSend" runat="server">
                                         <div class="action-panel">
                                             <h3>Send CloudMoney</h3>
 
-                                            <%-- STEP 1: Enter account number --%>
+                                            <%-- STEP 1: Enter recipient account number --%>
                                             <asp:Panel ID="pnlVerifyReceiver" runat="server">
                                                 <asp:TextBox ID="txtSendAccount" runat="server" CssClass="form-input" placeholder="Recipient Account No."></asp:TextBox>
                                                 <asp:Button ID="btnVerifyReceiver" runat="server" Text="Verify Receiver" CssClass="btn-submit" OnClick="btnVerifyReceiver_Click" />
                                             </asp:Panel>
 
-                                            <%-- STEP 2: Show verified receiver info (Fix #8) --%>
-                                            <%-- Replaced single combined label with a proper info card --%>
+                                            <%-- STEP 2: Show verified receiver Account No. and Name --%>
                                             <asp:Panel ID="pnlReceiverInfo" runat="server" Visible="false">
                                                 <div class="receiver-info-panel">
                                                     <span class="info-label">Sending To</span>
@@ -99,20 +163,22 @@
                                                 </div>
                                             </asp:Panel>
 
-                                            <%-- STEP 3: Amount + password form --%>
-                                            <asp:Panel ID="pnlSendMoneyForm" runat="server" Visible="false" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                                            <%-- STEP 3: Enter amount and password --%>
+                                            <asp:Panel ID="pnlSendMoneyForm" runat="server" Visible="false" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:10px;">
                                                 <p style="font-size:12px; color:#A0AABF;">Min: ₱100 | Max: ₱2,000 | Must be divisible by 100</p>
                                                 <asp:TextBox ID="txtSendAmount" runat="server" CssClass="form-input" placeholder="Amount"></asp:TextBox>
                                                 <asp:TextBox ID="txtSendPassword" runat="server" CssClass="form-input" placeholder="Enter Your Password" TextMode="Password"></asp:TextBox>
                                                 <asp:Button ID="btnSubmitSend" runat="server" Text="Send Money" CssClass="btn-submit" OnClick="btnSubmitSend_Click" />
-                                                <asp:Button ID="btnCancelSend" runat="server" Text="Cancel" CssClass="btn-filter" OnClick="btnCancelSend_Click" />
+                                                <asp:Button ID="btnCancelSend" runat="server" Text="Cancel" CssClass="btn-filter" OnClick="btnCancelSend_Click" CausesValidation="false" />
                                             </asp:Panel>
 
                                         </div>
                                     </asp:View>
+
                                 </asp:MultiView>
                             </div>
 
+                            <%-- Reports / Tables --%>
                             <div class="card data-container">
                                 <div class="tab-buttons">
                                     <asp:LinkButton ID="btnTabStatement" runat="server" CssClass="tab-btn active" OnClick="TableTab_Click" CommandArgument="0">View Statement Of Account</asp:LinkButton>
@@ -121,14 +187,24 @@
                                 </div>
 
                                 <div class="centered-filter-form">
-                                    <h3 class="filter-title"><asp:Label ID="lblFilterTitle" runat="server" Text="My Statement of Account"></asp:Label></h3>
-                                    <div class="filter-row"><label>From</label><asp:TextBox ID="txtFromDate" runat="server" TextMode="Date" CssClass="filter-input-centered"></asp:TextBox></div>
-                                    <div class="filter-row"><label>To</label><asp:TextBox ID="txtToDate" runat="server" TextMode="Date" CssClass="filter-input-centered"></asp:TextBox></div>
+                                    <h3 class="filter-title">
+                                        <asp:Label ID="lblFilterTitle" runat="server" Text="My Statement of Account"></asp:Label>
+                                    </h3>
+                                    <div class="filter-row">
+                                        <label>From</label>
+                                        <asp:TextBox ID="txtFromDate" runat="server" TextMode="Date" CssClass="filter-input-centered"></asp:TextBox>
+                                    </div>
+                                    <div class="filter-row">
+                                        <label>To</label>
+                                        <asp:TextBox ID="txtToDate" runat="server" TextMode="Date" CssClass="filter-input-centered"></asp:TextBox>
+                                    </div>
                                     <div class="filter-row">
                                         <label>Type</label>
-                                        <asp:DropDownList ID="ddlType" runat="server" CssClass="filter-input-centered"><asp:ListItem Text="All" Value="All"></asp:ListItem></asp:DropDownList>
+                                        <asp:DropDownList ID="ddlType" runat="server" CssClass="filter-input-centered">
+                                            <asp:ListItem Text="All" Value="All"></asp:ListItem>
+                                        </asp:DropDownList>
                                     </div>
-                                    <%-- Date validation error label (Fix #9) --%>
+                                    <%-- Inline date validation error --%>
                                     <asp:Label ID="lblDateError" runat="server" CssClass="date-error" Visible="false"></asp:Label>
                                     <div class="filter-actions">
                                         <asp:Button ID="btnList" runat="server" Text="List" CssClass="btn-list" OnClick="btnList_Click" />
@@ -136,10 +212,15 @@
                                 </div>
 
                                 <asp:MultiView ID="mvTables" runat="server" ActiveViewIndex="0">
+
+                                    <%-- Statement of Account --%>
                                     <asp:View ID="vwTableStatement" runat="server">
                                         <asp:GridView ID="gvStatement" runat="server" AutoGenerateColumns="False" CssClass="grid-view" GridLines="None" AllowPaging="True" PageSize="10" OnPageIndexChanging="gvStatement_PageIndexChanging">
-                                            <HeaderStyle CssClass="grid-header" /> <RowStyle CssClass="grid-row" /> <AlternatingRowStyle CssClass="grid-alt-row" />
+                                            <HeaderStyle CssClass="grid-header" />
+                                            <RowStyle CssClass="grid-row" />
+                                            <AlternatingRowStyle CssClass="grid-alt-row" />
                                             <Columns>
+                                                <asp:BoundField DataField="SeqNum" HeaderText="Seq. #" />
                                                 <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:MM/dd/yyyy hh:mm tt}" />
                                                 <asp:BoundField DataField="Description" HeaderText="Description" />
                                                 <asp:BoundField DataField="Debit" HeaderText="Debit" DataFormatString="{0:N2}" NullDisplayText="" />
@@ -148,9 +229,13 @@
                                             </Columns>
                                         </asp:GridView>
                                     </asp:View>
+
+                                    <%-- Deposits or Withdrawals --%>
                                     <asp:View ID="vwTableDeposits" runat="server">
                                         <asp:GridView ID="gvDeposits" runat="server" AutoGenerateColumns="False" CssClass="grid-view" GridLines="None" AllowPaging="True" PageSize="10" OnPageIndexChanging="gvDeposits_PageIndexChanging">
-                                            <HeaderStyle CssClass="grid-header" /> <RowStyle CssClass="grid-row" /> <AlternatingRowStyle CssClass="grid-alt-row" />
+                                            <HeaderStyle CssClass="grid-header" />
+                                            <RowStyle CssClass="grid-row" />
+                                            <AlternatingRowStyle CssClass="grid-alt-row" />
                                             <Columns>
                                                 <asp:BoundField DataField="SeqNum" HeaderText="Seq. #" />
                                                 <asp:BoundField DataField="Type" HeaderText="Type" />
@@ -159,9 +244,13 @@
                                             </Columns>
                                         </asp:GridView>
                                     </asp:View>
+
+                                    <%-- Sent or Received Transactions --%>
                                     <asp:View ID="vwTableTransactions" runat="server">
                                         <asp:GridView ID="gvTransactions" runat="server" AutoGenerateColumns="False" CssClass="grid-view" GridLines="None" AllowPaging="True" PageSize="10" OnPageIndexChanging="gvTransactions_PageIndexChanging">
-                                            <HeaderStyle CssClass="grid-header" /> <RowStyle CssClass="grid-row" /> <AlternatingRowStyle CssClass="grid-alt-row" />
+                                            <HeaderStyle CssClass="grid-header" />
+                                            <RowStyle CssClass="grid-row" />
+                                            <AlternatingRowStyle CssClass="grid-alt-row" />
                                             <Columns>
                                                 <asp:BoundField DataField="SeqNum" HeaderText="Seq. #" />
                                                 <asp:BoundField DataField="DateSent" HeaderText="Date Sent" DataFormatString="{0:MM/dd/yyyy hh:mm tt}" />
@@ -171,9 +260,11 @@
                                             </Columns>
                                         </asp:GridView>
                                     </asp:View>
+
                                 </asp:MultiView>
                             </div>
                         </asp:View>
+
                     </asp:MultiView>
                 </div>
             </div>

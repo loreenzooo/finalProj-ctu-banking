@@ -164,42 +164,59 @@ namespace Main.Classes
         // ==========================================
 
         // FIX 1 (Bug 1): Running balance using SUM() OVER() window function.
-        //   OLD: (SELECT balance FROM Users WHERE account_number = @AccountNo) AS Balance
-        //        ^ This stamped the CURRENT total balance on every single row.
-        //   NEW: SUM(...) OVER (ORDER BY transaction_time ASC, transaction_id ASC ROWS UNBOUNDED PRECEDING)
-        //        ^ This computes a per-row cumulative running balance in chronological order.
-        //        The transaction_id tiebreaker ensures correct order when two transactions share the same timestamp.
+        // FIX 4 (SeqNum): Added ROW_NUMBER() as SeqNum column — was missing from this table.
+        // FIX 5 (Date filter + running balance):
+        //   PROBLEM: When a date filter is applied, the WHERE clause removes older rows BEFORE
+        //            the window function runs. This means the running balance only accumulates
+        //            from the filtered rows, not from the true beginning — giving wrong balances.
+        //   SOLUTION: Use a subquery (CTE-style inner query) to:
+        //     Step A — compute the full running balance over ALL rows (no date filter yet)
+        //     Step B — THEN filter by date in the outer query
+        //   This way the Balance column always reflects the true historical running total,
+        //   even when you filter to only show a specific date range.
         public DataTable GetStatement(int accountNumber, string fromDate, string toDate)
         {
             DataTable dt = new DataTable();
             using (SqlConnection conn = DBConnection.GetConnection())
             {
+                // Inner query: compute running balance over ALL transactions first (no date filter)
+                // Outer query: apply date filter AFTER balance is already correctly computed
                 string query = @"
                     SELECT
-                        transaction_time AS Date,
-                        transaction_type AS Description,
-                        CASE WHEN sender_account   = @AccountNo THEN amount ELSE NULL END AS Debit,
-                        CASE WHEN receiver_account = @AccountNo THEN amount ELSE NULL END AS Credit,
-                        SUM(
-                            CASE
-                                WHEN receiver_account = @AccountNo THEN  amount   -- Deposit / received = +
-                                WHEN sender_account   = @AccountNo THEN -amount   -- Withdraw / sent    = -
-                                ELSE 0
-                            END
-                        ) OVER (
-                            ORDER BY transaction_time ASC, transaction_id ASC
-                            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-                        ) AS Balance
-                    FROM Transactions
-                    WHERE (sender_account = @AccountNo OR receiver_account = @AccountNo)";
+                        SeqNum,
+                        Date,
+                        Description,
+                        Debit,
+                        Credit,
+                        Balance
+                    FROM (
+                        SELECT
+                            ROW_NUMBER() OVER (ORDER BY transaction_time DESC, transaction_id DESC) AS SeqNum,
+                            transaction_time AS Date,
+                            transaction_type AS Description,
+                            CASE WHEN sender_account   = @AccountNo THEN amount ELSE NULL END AS Debit,
+                            CASE WHEN receiver_account = @AccountNo THEN amount ELSE NULL END AS Credit,
+                            SUM(
+                                CASE
+                                    WHEN receiver_account = @AccountNo THEN  amount
+                                    WHEN sender_account   = @AccountNo THEN -amount
+                                    ELSE 0
+                                END
+                            ) OVER (
+                                ORDER BY transaction_time ASC, transaction_id ASC
+                                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                            ) AS Balance,
+                            transaction_time AS tx_time
+                        FROM Transactions
+                        WHERE (sender_account = @AccountNo OR receiver_account = @AccountNo)
+                    ) AS FullHistory
+                    WHERE 1=1";
 
                 // FIX 2 (Bug 2): Append 23:59:59 to toDate so the entire end day is included.
-                //   OLD: transaction_time <= '2026-04-24'  ->  cuts off at 2026-04-24 00:00:00
-                //   NEW: transaction_time <= '2026-04-24 23:59:59'  ->  includes the full day
-                if (!string.IsNullOrEmpty(fromDate)) query += " AND transaction_time >= @FromDate";
-                if (!string.IsNullOrEmpty(toDate)) query += " AND transaction_time <= @ToDate";
+                if (!string.IsNullOrEmpty(fromDate)) query += " AND tx_time >= @FromDate";
+                if (!string.IsNullOrEmpty(toDate)) query += " AND tx_time <= @ToDate";
 
-                query += " ORDER BY transaction_time DESC, transaction_id DESC";
+                query += " ORDER BY Date DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
@@ -215,10 +232,6 @@ namespace Main.Classes
         // FIX 2 (Bug 2): toDate + " 23:59:59" to include the full end day.
         // FIX 3 (SeqNum): ROW_NUMBER() OVER() so Seq# always starts at 1 for this
         //   table only, independent of transaction_id or any other table's numbering.
-        //   OLD: transaction_id AS SeqNum  ->  used global DB identity, numbers had gaps
-        //        and continued across tables (e.g. showed 1, 3, 5 instead of 1, 2, 3)
-        //   NEW: ROW_NUMBER() OVER (ORDER BY transaction_time DESC) AS SeqNum
-        //        ->  always 1, 2, 3... for exactly the rows returned by this query only
         public DataTable GetDepositsWithdrawals(int accountNumber, string fromDate, string toDate, string type)
         {
             DataTable dt = new DataTable();

@@ -9,15 +9,20 @@ namespace Main
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["AccountNumber"] == null) { Response.Redirect("Login.aspx"); return; }
+            if (Session["AccountNumber"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
 
-            // Always rebuild the filter dropdown on every load
+            // Always rebuild filter dropdown on every postback (prevents it from losing items)
             UpdateFilterState();
 
             if (!IsPostBack)
             {
                 int currentAccountNo = Convert.ToInt32(Session["AccountNumber"]);
                 UserManager userManager = new UserManager();
+
                 string firstName = userManager.GetUserFirstName(currentAccountNo);
                 lblUserName.Text = firstName;
                 if (!string.IsNullOrEmpty(firstName))
@@ -44,6 +49,11 @@ namespace Main
             if (viewIndex == 0) LoadDashboardStats();
         }
 
+        protected void btnSidebarChangePassword_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("ChangePassword.aspx");
+        }
+
         protected void btnSidebarLogout_Click(object sender, EventArgs e)
         {
             Session.Clear();
@@ -52,7 +62,7 @@ namespace Main
         }
 
         // ==========================================
-        // DASHBOARD PROFILE STATS
+        // DASHBOARD STATS
         // ==========================================
         private void LoadDashboardStats()
         {
@@ -73,28 +83,37 @@ namespace Main
         }
 
         // ==========================================
-        // ACTION PANELS (DEPOSIT/WITHDRAW/SEND)
+        // ACTION PANELS (DEPOSIT / WITHDRAW / SEND)
         // ==========================================
         protected void Action_Click(object sender, EventArgs e)
         {
             Button clickedBtn = (Button)sender;
             int actionIndex = int.Parse(clickedBtn.CommandArgument);
 
+            // Toggle: clicking the same button again closes the panel
             mvActions.ActiveViewIndex = (mvActions.ActiveViewIndex == actionIndex) ? -1 : actionIndex;
 
-            if (actionIndex == 1) // Withdraw Panel Selected -> Load Balance
+            // Load current balance when Withdraw panel is opened
+            if (actionIndex == 1)
             {
                 TransactionManager txManager = new TransactionManager();
                 lblWithdrawBalance.Text = txManager.GetBalance(Convert.ToInt32(Session["AccountNumber"])).ToString("N2");
             }
+
+            // Reset Send panel if navigating away from it
+            if (actionIndex != 2)
+                ResetSendPanel();
         }
 
-        // RULES: Min 100, Max 2000, Divisible by 100
+        // Rules: Min ₱100, Max ₱2,000, divisible by 100
         private bool IsValidAmount(decimal amount)
         {
             return amount >= 100 && amount <= 2000 && (amount % 100 == 0);
         }
 
+        // ==========================================
+        // DEPOSIT
+        // ==========================================
         protected void btnSubmitDeposit_Click(object sender, EventArgs e)
         {
             decimal amount;
@@ -128,6 +147,9 @@ namespace Main
             else ShowAlert("Please enter a valid numeric amount.");
         }
 
+        // ==========================================
+        // WITHDRAW
+        // ==========================================
         protected void btnSubmitWithdraw_Click(object sender, EventArgs e)
         {
             decimal amount;
@@ -162,20 +184,36 @@ namespace Main
         }
 
         // ==========================================
-        // SEND CLOUDMONEY LOGIC
+        // SEND CLOUDMONEY
         // ==========================================
+
+        // STEP 1: Verify receiver — shows Account No. and Name in separate fields
         protected void btnVerifyReceiver_Click(object sender, EventArgs e)
         {
             int receiverAccount;
             if (int.TryParse(txtSendAccount.Text, out receiverAccount))
             {
+                int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
+
+                // Cannot send to yourself
+                if (receiverAccount == currentAccount)
+                {
+                    ShowAlert("You cannot send money to yourself.");
+                    return;
+                }
+
                 UserManager userManager = new UserManager();
                 string receiverName = userManager.GetReceiverName(receiverAccount);
 
                 if (!string.IsNullOrEmpty(receiverName))
                 {
-                    lblReceiverName.Text = $"{receiverName} (Account: {receiverAccount})";
+                    // Populate separate Account No. and Name labels
+                    lblReceiverAccountNo.Text = receiverAccount.ToString();
+                    lblReceiverName.Text = receiverName;
+
+                    // Show info card + send form, hide verify input
                     pnlVerifyReceiver.Visible = false;
+                    pnlReceiverInfo.Visible = true;
                     pnlSendMoneyForm.Visible = true;
                 }
                 else ShowAlert("Receiver account does not exist.");
@@ -185,13 +223,23 @@ namespace Main
 
         protected void btnCancelSend_Click(object sender, EventArgs e)
         {
+            ResetSendPanel();
+        }
+
+        // Centralised reset for the entire Send CloudMoney panel
+        private void ResetSendPanel()
+        {
             txtSendAccount.Text = "";
             txtSendAmount.Text = "";
             txtSendPassword.Text = "";
+            lblReceiverAccountNo.Text = "";
+            lblReceiverName.Text = "";
             pnlVerifyReceiver.Visible = true;
+            pnlReceiverInfo.Visible = false;
             pnlSendMoneyForm.Visible = false;
         }
 
+        // STEP 2: Submit send — validates all rules then processes transfer
         protected void btnSubmitSend_Click(object sender, EventArgs e)
         {
             decimal amount;
@@ -210,24 +258,28 @@ namespace Main
                 UserManager userManager = new UserManager();
                 TransactionManager txManager = new TransactionManager();
 
-                if (txManager.GetBalance(currentAccount) < amount)
-                {
-                    ShowAlert("Insufficient funds.");
-                    return;
-                }
-
-                if (!userManager.UserLogin(currentAccount, password))
-                {
-                    ShowAlert("Security Verification Failed: Incorrect password.");
-                    return;
-                }
-
+                // Rule 1: Cannot send to yourself
                 if (receiverAccount == currentAccount)
                 {
                     ShowAlert("You cannot send money to yourself.");
                     return;
                 }
 
+                // Rule 2: Sender must have sufficient funds
+                if (txManager.GetBalance(currentAccount) < amount)
+                {
+                    ShowAlert("Insufficient funds.");
+                    return;
+                }
+
+                // Rule 3: Password verification
+                if (!userManager.UserLogin(currentAccount, password))
+                {
+                    ShowAlert("Security Verification Failed: Incorrect password.");
+                    return;
+                }
+
+                // Rule 4: Receiver balance cap
                 if (txManager.GetBalance(receiverAccount) + amount > 10000)
                 {
                     ShowAlert("Transfer failed. Recipient's balance would exceed ₱10,000.00.");
@@ -238,7 +290,7 @@ namespace Main
                 if (result == "Success")
                 {
                     ShowAlert("Money sent successfully!");
-                    btnCancelSend_Click(null, null); // Resets the form
+                    ResetSendPanel();
                     mvActions.ActiveViewIndex = -1;
                     BindCurrentTable();
                 }
@@ -260,8 +312,16 @@ namespace Main
         {
             LinkButton clickedTab = (LinkButton)sender;
             mvTables.ActiveViewIndex = int.Parse(clickedTab.CommandArgument);
-            btnTabStatement.CssClass = "tab-btn"; btnTabDeposits.CssClass = "tab-btn"; btnTabTransactions.CssClass = "tab-btn";
+
+            btnTabStatement.CssClass = "tab-btn";
+            btnTabDeposits.CssClass = "tab-btn";
+            btnTabTransactions.CssClass = "tab-btn";
             clickedTab.CssClass = "tab-btn active";
+
+            // Clear any date error when switching tabs
+            lblDateError.Visible = false;
+            lblDateError.Text = "";
+
             UpdateFilterState();
             BindCurrentTable();
         }
@@ -271,7 +331,10 @@ namespace Main
             ddlType.Items.Clear();
             ddlType.Items.Add(new ListItem("All", "All"));
 
-            if (mvTables.ActiveViewIndex == 0) lblFilterTitle.Text = "My Statement of Account";
+            if (mvTables.ActiveViewIndex == 0)
+            {
+                lblFilterTitle.Text = "My Statement of Account";
+            }
             else if (mvTables.ActiveViewIndex == 1)
             {
                 lblFilterTitle.Text = "My Deposits or Withdrawals";
@@ -286,29 +349,50 @@ namespace Main
             }
         }
 
+        // Date validation: no future dates, from must be <= to
         protected void btnList_Click(object sender, EventArgs e)
         {
-            // Date validation
+            lblDateError.Visible = false;
+            lblDateError.Text = "";
+
             DateTime today = DateTime.Today;
+            bool hasFrom = !string.IsNullOrEmpty(txtFromDate.Text);
+            bool hasTo = !string.IsNullOrEmpty(txtToDate.Text);
+            DateTime fromDate, toDate;
 
-            if (!string.IsNullOrEmpty(txtFromDate.Text) && DateTime.Parse(txtFromDate.Text) > today)
-            { ShowAlert("From date cannot be a future date."); return; }
-
-            if (!string.IsNullOrEmpty(txtToDate.Text) && DateTime.Parse(txtToDate.Text) > today)
-            { ShowAlert("To date cannot be a future date."); return; }
-
-            if (!string.IsNullOrEmpty(txtFromDate.Text) && !string.IsNullOrEmpty(txtToDate.Text))
+            if (hasFrom && DateTime.TryParse(txtFromDate.Text, out fromDate))
             {
-                if (DateTime.Parse(txtFromDate.Text) > DateTime.Parse(txtToDate.Text))
-                { ShowAlert("From date must be earlier than To date."); return; }
+                if (fromDate > today)
+                {
+                    lblDateError.Text = "From date cannot be a future date.";
+                    lblDateError.Visible = true;
+                    return;
+                }
+            }
+
+            if (hasTo && DateTime.TryParse(txtToDate.Text, out toDate))
+            {
+                if (toDate > today)
+                {
+                    lblDateError.Text = "To date cannot be a future date.";
+                    lblDateError.Visible = true;
+                    return;
+                }
+            }
+
+            if (hasFrom && hasTo &&
+                DateTime.TryParse(txtFromDate.Text, out fromDate) &&
+                DateTime.TryParse(txtToDate.Text, out toDate))
+            {
+                if (fromDate > toDate)
+                {
+                    lblDateError.Text = "From date must be earlier than or equal to the To date.";
+                    lblDateError.Visible = true;
+                    return;
+                }
             }
 
             BindCurrentTable();
-        }
-
-        protected void btnSidebarChangePassword_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("ChangePassword.aspx");
         }
 
         private void BindCurrentTable()
@@ -337,8 +421,6 @@ namespace Main
                 gvTransactions.DataSource = txManager.GetTransfers(currentAccountNo, fromDate, toDate, type);
                 gvTransactions.DataBind();
             }
-
-            
         }
 
         protected void gvStatement_PageIndexChanging(object sender, GridViewPageEventArgs e) { gvStatement.PageIndex = e.NewPageIndex; BindCurrentTable(); }
