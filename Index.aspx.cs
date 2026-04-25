@@ -15,9 +15,6 @@ namespace Main
                 return;
             }
 
-            // Always rebuild filter dropdown on every postback (prevents it from losing items)
-            UpdateFilterState();
-
             if (!IsPostBack)
             {
                 int currentAccountNo = Convert.ToInt32(Session["AccountNumber"]);
@@ -29,6 +26,7 @@ namespace Main
                     lblProfileInitial.Text = firstName.Substring(0, 1).ToUpper();
 
                 LoadDashboardStats();
+                UpdateFilterState();  // ← only on first load, NOT on every postback
                 BindCurrentTable();
             }
         }

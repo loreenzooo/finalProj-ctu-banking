@@ -164,23 +164,20 @@ namespace Main.Classes
         // ==========================================
 
         // FIX 1 (Bug 1): Running balance using SUM() OVER() window function.
-        // FIX 4 (SeqNum): Added ROW_NUMBER() as SeqNum column — was missing from this table.
-        // FIX 5 (Date filter + running balance):
-        //   PROBLEM: When a date filter is applied, the WHERE clause removes older rows BEFORE
-        //            the window function runs. This means the running balance only accumulates
-        //            from the filtered rows, not from the true beginning — giving wrong balances.
-        //   SOLUTION: Use a subquery (CTE-style inner query) to:
-        //     Step A — compute the full running balance over ALL rows (no date filter yet)
-        //     Step B — THEN filter by date in the outer query
-        //   This way the Balance column always reflects the true historical running total,
-        //   even when you filter to only show a specific date range.
+        // FIX 4 (SeqNum): ROW_NUMBER() as SeqNum.
+        // FIX 5 (Date filter + running balance): Subquery computes full running balance
+        //        first, then outer query applies date filter so Balance is always correct.
+        // FIX 6 (Description): Transfer rows now show "Sent" or "Received" instead of
+        //        "Transfer" — determined by whether the user is the sender or receiver.
+        //   OLD: transaction_type AS Description  ->  always shows "Transfer"
+        //   NEW: CASE WHEN transaction_type = 'Transfer'
+        //              THEN CASE WHEN sender_account = @AccountNo THEN 'Sent' ELSE 'Received' END
+        //             ELSE transaction_type  ->  Deposit / Withdraw unchanged
         public DataTable GetStatement(int accountNumber, string fromDate, string toDate)
         {
             DataTable dt = new DataTable();
             using (SqlConnection conn = DBConnection.GetConnection())
             {
-                // Inner query: compute running balance over ALL transactions first (no date filter)
-                // Outer query: apply date filter AFTER balance is already correctly computed
                 string query = @"
                     SELECT
                         SeqNum,
@@ -193,7 +190,14 @@ namespace Main.Classes
                         SELECT
                             ROW_NUMBER() OVER (ORDER BY transaction_time DESC, transaction_id DESC) AS SeqNum,
                             transaction_time AS Date,
-                            transaction_type AS Description,
+
+                            -- FIX 6: Show Sent/Received for transfers instead of Transfer
+                            CASE
+                                WHEN transaction_type = 'Transfer' THEN
+                                    CASE WHEN sender_account = @AccountNo THEN 'Sent' ELSE 'Received' END
+                                ELSE transaction_type
+                            END AS Description,
+
                             CASE WHEN sender_account   = @AccountNo THEN amount ELSE NULL END AS Debit,
                             CASE WHEN receiver_account = @AccountNo THEN amount ELSE NULL END AS Credit,
                             SUM(
@@ -212,7 +216,6 @@ namespace Main.Classes
                     ) AS FullHistory
                     WHERE 1=1";
 
-                // FIX 2 (Bug 2): Append 23:59:59 to toDate so the entire end day is included.
                 if (!string.IsNullOrEmpty(fromDate)) query += " AND tx_time >= @FromDate";
                 if (!string.IsNullOrEmpty(toDate)) query += " AND tx_time <= @ToDate";
 
@@ -230,26 +233,42 @@ namespace Main.Classes
         }
 
         // FIX 2 (Bug 2): toDate + " 23:59:59" to include the full end day.
-        // FIX 3 (SeqNum): ROW_NUMBER() OVER() so Seq# always starts at 1 for this
-        //   table only, independent of transaction_id or any other table's numbering.
+        // FIX 3 (SeqNum): ROW_NUMBER() for clean per-table sequence numbers.
+        // FIX 7 (Type filter + SeqNum): Wrapped in subquery so ROW_NUMBER() runs
+        //        AFTER the type filter is applied. Without this, selecting "Deposit"
+        //        would still number rows based on ALL deposits+withdrawals before
+        //        filtering, causing gaps (e.g. 1, 3, 5 instead of 1, 2, 3).
+        //   OLD: ROW_NUMBER() at top level then AND transaction_type = 'Deposit' appended
+        //        -> ROW_NUMBER counts all rows first, filter applied after = wrong SeqNums
+        //   NEW: Filter inside inner query first, then ROW_NUMBER() in outer query
+        //        -> ROW_NUMBER only counts the rows that pass the filter = always 1, 2, 3...
         public DataTable GetDepositsWithdrawals(int accountNumber, string fromDate, string toDate, string type)
         {
             DataTable dt = new DataTable();
             using (SqlConnection conn = DBConnection.GetConnection())
             {
-                string query = @"SELECT 
-                                    ROW_NUMBER() OVER (ORDER BY transaction_time DESC) AS SeqNum,
-                                    CASE WHEN transaction_type = 'Deposit' THEN 'D' ELSE 'W' END AS Type,
-                                    transaction_time AS Date,
-                                    amount AS Amount
-                                 FROM Transactions
-                                 WHERE (sender_account = @AccountNo OR receiver_account = @AccountNo)
-                                 AND transaction_type IN ('Deposit', 'Withdraw')";
+                // Build a single flat WHERE clause with all conditions.
+                // ROW_NUMBER() is computed in the outer SELECT after all filters are applied,
+                // so SeqNum is always 1, 2, 3... for exactly the rows returned.
+                string whereClause = @"
+                    WHERE (sender_account = @AccountNo OR receiver_account = @AccountNo)
+                    AND transaction_type IN ('Deposit', 'Withdraw')";
 
-                if (type == "D") query += " AND transaction_type = 'Deposit'";
-                else if (type == "W") query += " AND transaction_type = 'Withdraw'";
-                if (!string.IsNullOrEmpty(fromDate)) query += " AND transaction_time >= @FromDate";
-                if (!string.IsNullOrEmpty(toDate)) query += " AND transaction_time <= @ToDate";
+                // Inline type filter using literal SQL values (safe — only our own constants, never user input)
+                if (type == "D") whereClause += " AND transaction_type = 'Deposit'";
+                else if (type == "W") whereClause += " AND transaction_type = 'Withdraw'";
+                if (!string.IsNullOrEmpty(fromDate)) whereClause += " AND transaction_time >= @FromDate";
+                if (!string.IsNullOrEmpty(toDate)) whereClause += " AND transaction_time <= @ToDate";
+
+                string query = @"
+                    SELECT
+                        ROW_NUMBER() OVER (ORDER BY transaction_time DESC) AS SeqNum,
+                        CASE WHEN transaction_type = 'Deposit' THEN 'D' ELSE 'W' END AS Type,
+                        transaction_time AS Date,
+                        amount AS Amount
+                    FROM Transactions"
+                    + whereClause +
+                    " ORDER BY transaction_time DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
@@ -263,26 +282,32 @@ namespace Main.Classes
         }
 
         // FIX 2 (Bug 2): toDate + " 23:59:59" to include the full end day.
-        // FIX 3 (SeqNum): Same ROW_NUMBER() fix as GetDepositsWithdrawals above.
+        // FIX 3 (SeqNum): Same subquery pattern as GetDepositsWithdrawals —
+        //        ROW_NUMBER() runs after all filters so SeqNum is always 1, 2, 3...
         public DataTable GetTransfers(int accountNumber, string fromDate, string toDate, string type)
         {
             DataTable dt = new DataTable();
             using (SqlConnection conn = DBConnection.GetConnection())
             {
-                string query = @"SELECT 
-                                    ROW_NUMBER() OVER (ORDER BY transaction_time DESC) AS SeqNum,
-                                    transaction_time AS DateSent,
-                                    amount AS Amount,
-                                    CASE WHEN sender_account   = @AccountNo THEN receiver_account ELSE NULL END AS SentTo,
-                                    CASE WHEN receiver_account = @AccountNo THEN sender_account   ELSE NULL END AS ReceivedFrom
-                                 FROM Transactions
-                                 WHERE transaction_type = 'Transfer'
-                                 AND (sender_account = @AccountNo OR receiver_account = @AccountNo)";
+                string whereClause = @"
+                    WHERE transaction_type = 'Transfer'
+                    AND (sender_account = @AccountNo OR receiver_account = @AccountNo)";
 
-                if (type == "Sent") query += " AND sender_account = @AccountNo";
-                else if (type == "Received") query += " AND receiver_account = @AccountNo";
-                if (!string.IsNullOrEmpty(fromDate)) query += " AND transaction_time >= @FromDate";
-                if (!string.IsNullOrEmpty(toDate)) query += " AND transaction_time <= @ToDate";
+                if (type == "Sent") whereClause += " AND sender_account = @AccountNo";
+                else if (type == "Received") whereClause += " AND receiver_account = @AccountNo";
+                if (!string.IsNullOrEmpty(fromDate)) whereClause += " AND transaction_time >= @FromDate";
+                if (!string.IsNullOrEmpty(toDate)) whereClause += " AND transaction_time <= @ToDate";
+
+                string query = @"
+                    SELECT
+                        ROW_NUMBER() OVER (ORDER BY transaction_time DESC) AS SeqNum,
+                        transaction_time AS DateSent,
+                        amount AS Amount,
+                        CASE WHEN sender_account   = @AccountNo THEN receiver_account ELSE NULL END AS SentTo,
+                        CASE WHEN receiver_account = @AccountNo THEN sender_account   ELSE NULL END AS ReceivedFrom
+                    FROM Transactions"
+                    + whereClause +
+                    " ORDER BY transaction_time DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
