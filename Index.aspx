@@ -6,15 +6,12 @@
     <title>CTU - E Wallet</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
     <link href="Content/styles/LandingPage.css" rel="stylesheet" type="text/css" />
-    <style>
-        /* --- Receiver Info Panel --- */
-     
-    </style>
 </head>
 <body>
     <form id="form1" runat="server">
         <div class="layout-wrapper">
 
+            <%-- ==================== SIDEBAR ==================== --%>
             <div class="sidebar">
                 <div class="sidebar-menu" style="margin-top: 20px;">
                     <asp:LinkButton ID="btnSidebarDashboard" runat="server" CssClass="menu-item active" OnClick="Sidebar_Click" CommandArgument="0">Dashboard</asp:LinkButton>
@@ -22,8 +19,30 @@
                     <asp:LinkButton ID="btnSidebarChangePassword" runat="server" CssClass="menu-item" OnClick="btnSidebarChangePassword_Click" CausesValidation="false">Change Password</asp:LinkButton>
                     <asp:LinkButton ID="btnSidebarLogout" runat="server" CssClass="menu-item logout-btn" OnClick="btnSidebarLogout_Click" CausesValidation="false">Log-out</asp:LinkButton>
                 </div>
+
+                <%-- NOTIFICATIONS in sidebar --%>
+                <div class="sidebar-notifications">
+                    <div class="sidebar-notif-header">  
+                        <span class="sidebar-notif-title">Received CloudMoney</span>
+                    </div>
+                    <asp:Label ID="lblNoNotifications" runat="server"
+                        CssClass="sidebar-notif-empty"
+                        Text="No recent transfers received."
+                        Visible="false">
+                    </asp:Label>
+                    <asp:Repeater ID="rptNotifications" runat="server">
+                        <ItemTemplate>
+                            <div class="sidebar-notif-item">
+                                <div class="sidebar-notif-amount">+₱<%# Eval("Amount", "{0:N2}") %></div>
+                                <div class="sidebar-notif-sender">From: <%# Eval("SenderName") %></div>
+                                <div class="sidebar-notif-date"><%# Eval("Date", "{0:MM/dd/yyyy hh:mm tt}") %></div>
+                            </div>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                </div>
             </div>
 
+            <%-- ==================== MAIN CONTENT ==================== --%>
             <div class="main-content">
                 <div class="top-header">
                     <div class="header-left"><h2>CTU - E Wallet</h2></div>
@@ -40,22 +59,56 @@
 
                         <%-- ==================== DASHBOARD VIEW ==================== --%>
                         <asp:View ID="vwDashboardStats" runat="server">
-                            <div class="card" style="max-width: 600px; margin: 0 auto;">
-                                <h2 class="table-header-title">My Dashboard</h2>
-                                <div style="font-size: 16px; line-height: 2.0;">
-                                    <p><strong>Account No:</strong> <asp:Label ID="lblDashAccountNo" runat="server" ForeColor="#EBA800"></asp:Label></p>
-                                    <p><strong>Name:</strong> <asp:Label ID="lblDashName" runat="server"></asp:Label></p>
-                                    <p><strong>Date Registered:</strong> <asp:Label ID="lblDashDateReg" runat="server"></asp:Label></p>
-                                    <p><strong>Total Current Balance:</strong> ₱<asp:Label ID="lblDashBalance" runat="server" ForeColor="#2DD253"></asp:Label></p>
-                                    <p><strong>Total Sent Amount:</strong> ₱<asp:Label ID="lblDashTotalSent" runat="server"></asp:Label></p>
+
+                            <h2 class="dashboard-title">My Dashboard</h2>
+
+                            <%-- ROW 1: Profile Info Card --%>
+                            <div class="dashboard-profile-card">
+                                <div class="profile-avatar">
+                                    <asp:Label ID="lblDashInitial" runat="server" Text="U"></asp:Label>
+                                </div>
+                                <div class="profile-details">
+                                    <div class="profile-name">
+                                        <asp:Label ID="lblDashName" runat="server"></asp:Label>
+                                    </div>
+                                    <div class="profile-meta">
+                                        <div class="profile-meta-item">
+                                            <span class="meta-label">Account No.</span>
+                                            <asp:Label ID="lblDashAccountNo" runat="server" CssClass="meta-value gold"></asp:Label>
+                                        </div>
+                                        <div class="profile-meta-divider"></div>
+                                        <div class="profile-meta-item">
+                                            <span class="meta-label">Date Registered</span>
+                                            <asp:Label ID="lblDashDateReg" runat="server" CssClass="meta-value"></asp:Label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <%-- ROW 2: Balance Cards side by side --%>
+                            <div class="dashboard-stats-row">
+
+                                <div class="stat-card balance-card">
+                                    <div class="stat-info">
+                                        <span class="stat-label">Total Current Balance</span>
+                                        <span class="stat-value green">₱<asp:Label ID="lblDashBalance" runat="server"></asp:Label></span>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card sent-card">
+                                    <div class="stat-info">
+                                        <span class="stat-label">Total Sent Amount</span>
+                                        <span class="stat-value">₱<asp:Label ID="lblDashTotalSent" runat="server"></asp:Label></span>
+                                    </div>
+                                </div>
+
+                            </div>
+
                         </asp:View>
 
                         <%-- ==================== MANAGE FUNDS VIEW ==================== --%>
                         <asp:View ID="vwManageFunds" runat="server">
 
-                            <%-- Action Buttons + Panels --%>
                             <div class="card action-container">
                                 <div class="action-buttons">
                                     <asp:Button ID="btnShowDeposit" runat="server" Text="Deposit" CssClass="action-btn" OnClick="Action_Click" CommandArgument="0" />
@@ -65,7 +118,6 @@
 
                                 <asp:MultiView ID="mvActions" runat="server" ActiveViewIndex="-1">
 
-                                    <%-- DEPOSIT --%>
                                     <asp:View ID="vwDeposit" runat="server">
                                         <div class="action-panel">
                                             <h3>Deposit Funds</h3>
@@ -75,7 +127,6 @@
                                         </div>
                                     </asp:View>
 
-                                    <%-- WITHDRAW --%>
                                     <asp:View ID="vwWithdraw" runat="server">
                                         <div class="action-panel">
                                             <h3>Withdraw Funds</h3>
@@ -86,18 +137,15 @@
                                         </div>
                                     </asp:View>
 
-                                    <%-- SEND CLOUDMONEY --%>
                                     <asp:View ID="vwSend" runat="server">
                                         <div class="action-panel">
                                             <h3>Send CloudMoney</h3>
 
-                                            <%-- STEP 1: Enter recipient account number --%>
                                             <asp:Panel ID="pnlVerifyReceiver" runat="server">
                                                 <asp:TextBox ID="txtSendAccount" runat="server" CssClass="form-input" placeholder="Recipient Account No."></asp:TextBox>
                                                 <asp:Button ID="btnVerifyReceiver" runat="server" Text="Verify Receiver" CssClass="btn-submit" OnClick="btnVerifyReceiver_Click" />
                                             </asp:Panel>
 
-                                            <%-- STEP 2: Show verified receiver Account No. and Name --%>
                                             <asp:Panel ID="pnlReceiverInfo" runat="server" Visible="false">
                                                 <div class="receiver-info-panel">
                                                     <span class="info-label">Sending To</span>
@@ -109,7 +157,6 @@
                                                 </div>
                                             </asp:Panel>
 
-                                            <%-- STEP 3: Enter amount and password --%>
                                             <asp:Panel ID="pnlSendMoneyForm" runat="server" Visible="false" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:10px;">
                                                 <p style="font-size:12px; color:#A0AABF;">Min: ₱100 | Max: ₱2,000 | Must be divisible by 100</p>
                                                 <asp:TextBox ID="txtSendAmount" runat="server" CssClass="form-input" placeholder="Amount"></asp:TextBox>
@@ -124,7 +171,6 @@
                                 </asp:MultiView>
                             </div>
 
-                            <%-- Reports / Tables --%>
                             <div class="card data-container">
                                 <div class="tab-buttons">
                                     <asp:LinkButton ID="btnTabStatement" runat="server" CssClass="tab-btn active" OnClick="TableTab_Click" CommandArgument="0">View Statement Of Account</asp:LinkButton>
@@ -150,7 +196,6 @@
                                             <asp:ListItem Text="All" Value="All"></asp:ListItem>
                                         </asp:DropDownList>
                                     </div>
-                                    <%-- Inline date validation error --%>
                                     <asp:Label ID="lblDateError" runat="server" CssClass="date-error" Visible="false"></asp:Label>
                                     <div class="filter-actions">
                                         <asp:Button ID="btnList" runat="server" Text="List" CssClass="btn-list" OnClick="btnList_Click" />
@@ -159,7 +204,6 @@
 
                                 <asp:MultiView ID="mvTables" runat="server" ActiveViewIndex="0">
 
-                                    <%-- Statement of Account --%>
                                     <asp:View ID="vwTableStatement" runat="server">
                                         <asp:GridView ID="gvStatement" runat="server" AutoGenerateColumns="False" CssClass="grid-view" GridLines="None" AllowPaging="True" PageSize="10" OnPageIndexChanging="gvStatement_PageIndexChanging">
                                             <HeaderStyle CssClass="grid-header" />
@@ -176,7 +220,6 @@
                                         </asp:GridView>
                                     </asp:View>
 
-                                    <%-- Deposits or Withdrawals --%>
                                     <asp:View ID="vwTableDeposits" runat="server">
                                         <asp:GridView ID="gvDeposits" runat="server" AutoGenerateColumns="False" CssClass="grid-view" GridLines="None" AllowPaging="True" PageSize="10" OnPageIndexChanging="gvDeposits_PageIndexChanging">
                                             <HeaderStyle CssClass="grid-header" />
@@ -191,7 +234,6 @@
                                         </asp:GridView>
                                     </asp:View>
 
-                                    <%-- Sent or Received Transactions --%>
                                     <asp:View ID="vwTableTransactions" runat="server">
                                         <asp:GridView ID="gvTransactions" runat="server" AutoGenerateColumns="False" CssClass="grid-view" GridLines="None" AllowPaging="True" PageSize="10" OnPageIndexChanging="gvTransactions_PageIndexChanging">
                                             <HeaderStyle CssClass="grid-header" />

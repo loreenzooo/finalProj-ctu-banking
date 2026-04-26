@@ -44,6 +44,7 @@ namespace Main.Classes
             }
         }
 
+        // User Login Function
         public bool UserLogin(int pin, string password)
         {
             using (SqlConnection con = DBConnection.GetConnection())

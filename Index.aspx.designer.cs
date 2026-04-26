@@ -60,6 +60,24 @@ namespace Main
         protected global::System.Web.UI.WebControls.LinkButton btnSidebarLogout;
 
         /// <summary>
+        /// lblNoNotifications control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblNoNotifications;
+
+        /// <summary>
+        /// rptNotifications control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptNotifications;
+
+        /// <summary>
         /// lblUserName control.
         /// </summary>
         /// <remarks>
@@ -96,13 +114,13 @@ namespace Main
         protected global::System.Web.UI.WebControls.View vwDashboardStats;
 
         /// <summary>
-        /// lblDashAccountNo control.
+        /// lblDashInitial control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDashAccountNo;
+        protected global::System.Web.UI.WebControls.Label lblDashInitial;
 
         /// <summary>
         /// lblDashName control.
@@ -112,6 +130,15 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblDashName;
+
+        /// <summary>
+        /// lblDashAccountNo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblDashAccountNo;
 
         /// <summary>
         /// lblDashDateReg control.

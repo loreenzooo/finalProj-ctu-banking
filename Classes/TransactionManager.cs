@@ -160,6 +160,37 @@ namespace Main.Classes
         }
 
         // ==========================================
+        // DASHBOARD NOTIFICATIONS
+        // ==========================================
+
+        // Returns the 5 most recent incoming CloudMoney transfers for the dashboard.
+        // Only fetches Transfer type where the user is the receiver (not the sender).
+        public DataTable GetRecentReceivedTransfers(int accountNumber)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection conn = DBConnection.GetConnection())
+            {
+                conn.Open();
+                string query = @"
+                    SELECT TOP 5
+                        sender_account   AS SenderAccount,
+                        amount           AS Amount,
+                        transaction_time AS Date
+                    FROM Transactions
+                    WHERE receiver_account = @AccountNo
+                    AND transaction_type = 'Transfer'
+                    ORDER BY transaction_time DESC";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@AccountNo", accountNumber);
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd)) sda.Fill(dt);
+                }
+            }
+            return dt;
+        }
+
+        // ==========================================
         // TABLE FETCHING
         // ==========================================
 

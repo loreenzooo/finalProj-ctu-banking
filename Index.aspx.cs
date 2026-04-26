@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Main.Classes;
@@ -26,7 +27,7 @@ namespace Main
                     lblProfileInitial.Text = firstName.Substring(0, 1).ToUpper();
 
                 LoadDashboardStats();
-                UpdateFilterState();  // ← only on first load, NOT on every postback
+                UpdateFilterState();
                 BindCurrentTable();
             }
         }
@@ -60,7 +61,7 @@ namespace Main
         }
 
         // ==========================================
-        // DASHBOARD STATS
+        // DASHBOARD STATS + NOTIFICATIONS
         // ==========================================
         private void LoadDashboardStats()
         {
@@ -78,6 +79,41 @@ namespace Main
             lblDashDateReg.Text = dateReg;
             lblDashBalance.Text = balance.ToString("N2");
             lblDashTotalSent.Text = totalSent.ToString("N2");
+
+            // Profile avatar initial — uses first letter of full name
+            if (!string.IsNullOrEmpty(name))
+                lblDashInitial.Text = name.Substring(0, 1).ToUpper();
+
+            // Notifications — recently received CloudMoney
+            DataTable rawNotifs = txManager.GetRecentReceivedTransfers(currentAccountNo);
+
+            if (rawNotifs.Rows.Count == 0)
+            {
+                lblNoNotifications.Visible = true;
+                rptNotifications.Visible = false;
+            }
+            else
+            {
+                lblNoNotifications.Visible = false;
+                rptNotifications.Visible = true;
+
+                DataTable enriched = new DataTable();
+                enriched.Columns.Add("SenderName");
+                enriched.Columns.Add("Amount", typeof(decimal));
+                enriched.Columns.Add("Date", typeof(DateTime));
+
+                foreach (DataRow row in rawNotifs.Rows)
+                {
+                    int senderAccount = Convert.ToInt32(row["SenderAccount"]);
+                    string senderName = userManager.GetReceiverName(senderAccount) ?? "Unknown";
+                    decimal amount = Convert.ToDecimal(row["Amount"]);
+                    DateTime date = Convert.ToDateTime(row["Date"]);
+                    enriched.Rows.Add(senderName, amount, date);
+                }
+
+                rptNotifications.DataSource = enriched;
+                rptNotifications.DataBind();
+            }
         }
 
         // ==========================================
@@ -88,22 +124,18 @@ namespace Main
             Button clickedBtn = (Button)sender;
             int actionIndex = int.Parse(clickedBtn.CommandArgument);
 
-            // Toggle: clicking the same button again closes the panel
             mvActions.ActiveViewIndex = (mvActions.ActiveViewIndex == actionIndex) ? -1 : actionIndex;
 
-            // Load current balance when Withdraw panel is opened
             if (actionIndex == 1)
             {
                 TransactionManager txManager = new TransactionManager();
                 lblWithdrawBalance.Text = txManager.GetBalance(Convert.ToInt32(Session["AccountNumber"])).ToString("N2");
             }
 
-            // Reset Send panel if navigating away from it
             if (actionIndex != 2)
                 ResetSendPanel();
         }
 
-        // Rules: Min ₱100, Max ₱2,000, divisible by 100
         private bool IsValidAmount(decimal amount)
         {
             return amount >= 100 && amount <= 2000 && (amount % 100 == 0);
@@ -184,8 +216,6 @@ namespace Main
         // ==========================================
         // SEND CLOUDMONEY
         // ==========================================
-
-        // STEP 1: Verify receiver — shows Account No. and Name in separate fields
         protected void btnVerifyReceiver_Click(object sender, EventArgs e)
         {
             int receiverAccount;
@@ -193,7 +223,6 @@ namespace Main
             {
                 int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
 
-                // Cannot send to yourself
                 if (receiverAccount == currentAccount)
                 {
                     ShowAlert("You cannot send money to yourself.");
@@ -205,11 +234,8 @@ namespace Main
 
                 if (!string.IsNullOrEmpty(receiverName))
                 {
-                    // Populate separate Account No. and Name labels
                     lblReceiverAccountNo.Text = receiverAccount.ToString();
                     lblReceiverName.Text = receiverName;
-
-                    // Show info card + send form, hide verify input
                     pnlVerifyReceiver.Visible = false;
                     pnlReceiverInfo.Visible = true;
                     pnlSendMoneyForm.Visible = true;
@@ -224,7 +250,6 @@ namespace Main
             ResetSendPanel();
         }
 
-        // Centralised reset for the entire Send CloudMoney panel
         private void ResetSendPanel()
         {
             txtSendAccount.Text = "";
@@ -237,7 +262,6 @@ namespace Main
             pnlSendMoneyForm.Visible = false;
         }
 
-        // STEP 2: Submit send — validates all rules then processes transfer
         protected void btnSubmitSend_Click(object sender, EventArgs e)
         {
             decimal amount;
@@ -256,28 +280,24 @@ namespace Main
                 UserManager userManager = new UserManager();
                 TransactionManager txManager = new TransactionManager();
 
-                // Rule 1: Cannot send to yourself
                 if (receiverAccount == currentAccount)
                 {
                     ShowAlert("You cannot send money to yourself.");
                     return;
                 }
 
-                // Rule 2: Sender must have sufficient funds
                 if (txManager.GetBalance(currentAccount) < amount)
                 {
                     ShowAlert("Insufficient funds.");
                     return;
                 }
 
-                // Rule 3: Password verification
                 if (!userManager.UserLogin(currentAccount, password))
                 {
                     ShowAlert("Security Verification Failed: Incorrect password.");
                     return;
                 }
 
-                // Rule 4: Receiver balance cap
                 if (txManager.GetBalance(receiverAccount) + amount > 10000)
                 {
                     ShowAlert("Transfer failed. Recipient's balance would exceed ₱10,000.00.");
@@ -316,7 +336,6 @@ namespace Main
             btnTabTransactions.CssClass = "tab-btn";
             clickedTab.CssClass = "tab-btn active";
 
-            // Clear any date error when switching tabs
             lblDateError.Visible = false;
             lblDateError.Text = "";
 
@@ -347,7 +366,6 @@ namespace Main
             }
         }
 
-        // Date validation: no future dates, from must be <= to
         protected void btnList_Click(object sender, EventArgs e)
         {
             lblDateError.Visible = false;
