@@ -20,11 +20,18 @@ namespace Main
             {
                 int currentAccountNo = Convert.ToInt32(Session["AccountNumber"]);
                 UserManager userManager = new UserManager();
+                TransactionManager txManager = new TransactionManager();
 
-                string firstName = userManager.GetUserFirstName(currentAccountNo);
-                lblUserName.Text = firstName;
-                if (!string.IsNullOrEmpty(firstName))
-                    lblProfileInitial.Text = firstName.Substring(0, 1).ToUpper();
+                string name, dateReg;
+                userManager.GetDashboardDetails(currentAccountNo, out name, out dateReg);
+                lblUserName.Text = name;
+
+                if (!string.IsNullOrEmpty(name))
+                    lblProfileInitial.Text = name.Substring(0, 1).ToUpper();
+
+                var notifs = txManager.GetRecentReceivedTransfers(currentAccountNo);
+                lblNotifBadge.Visible = notifs.Rows.Count > 0;
+                LoadNotifications(currentAccountNo, userManager, notifs);
 
                 LoadDashboardStats();
                 UpdateFilterState();
@@ -41,15 +48,11 @@ namespace Main
             int viewIndex = int.Parse(clickedBtn.CommandArgument);
 
             mvMainContent.ActiveViewIndex = viewIndex;
-
-            // Reset all sidebar active states
             btnSidebarDashboard.CssClass = "menu-item";
             btnSidebarManage.CssClass = "menu-item";
-            btnSidebarNotifications.CssClass = "menu-item";
             clickedBtn.CssClass = "menu-item active";
 
             if (viewIndex == 0) LoadDashboardStats();
-            if (viewIndex == 2) LoadNotifications();
         }
 
         protected void btnSidebarChangePassword_Click(object sender, EventArgs e)
@@ -84,7 +87,6 @@ namespace Main
             lblDashBalance.Text = balance.ToString("N2");
             lblDashTotalSent.Text = totalSent.ToString("N2");
 
-            // Profile avatar initial
             if (!string.IsNullOrEmpty(name))
                 lblDashInitial.Text = name.Substring(0, 1).ToUpper();
         }
@@ -92,14 +94,8 @@ namespace Main
         // ==========================================
         // NOTIFICATIONS
         // ==========================================
-        private void LoadNotifications()
+        private void LoadNotifications(int accountNo, UserManager userManager, DataTable rawNotifs)
         {
-            int currentAccountNo = Convert.ToInt32(Session["AccountNumber"]);
-            UserManager userManager = new UserManager();
-            TransactionManager txManager = new TransactionManager();
-
-            DataTable rawNotifs = txManager.GetRecentReceivedTransfers(currentAccountNo);
-
             if (rawNotifs.Rows.Count == 0)
             {
                 lblNoNotifications.Visible = true;
@@ -110,7 +106,6 @@ namespace Main
                 lblNoNotifications.Visible = false;
                 rptNotifications.Visible = true;
 
-                // Enrich each row with sender's full name
                 DataTable enriched = new DataTable();
                 enriched.Columns.Add("SenderName");
                 enriched.Columns.Add("Amount", typeof(decimal));
@@ -130,9 +125,23 @@ namespace Main
             }
         }
 
+        // Refreshes bell badge + dropdown after a successful send
+        private void RefreshNotifications()
+        {
+            int currentAccountNo = Convert.ToInt32(Session["AccountNumber"]);
+            UserManager userManager = new UserManager();
+            TransactionManager txManager = new TransactionManager();
+            var notifs = txManager.GetRecentReceivedTransfers(currentAccountNo);
+            lblNotifBadge.Visible = notifs.Rows.Count > 0;
+            LoadNotifications(currentAccountNo, userManager, notifs);
+        }
+
         // ==========================================
         // ACTION PANELS (DEPOSIT / WITHDRAW / SEND)
         // ==========================================
+
+        // BUG 1 FIX: Reset all success panels when switching between action buttons
+        // so a completed deposit success screen doesn't bleed into the withdraw panel.
         protected void Action_Click(object sender, EventArgs e)
         {
             Button clickedBtn = (Button)sender;
@@ -140,14 +149,25 @@ namespace Main
 
             mvActions.ActiveViewIndex = (mvActions.ActiveViewIndex == actionIndex) ? -1 : actionIndex;
 
+            // Always reset deposit and withdraw panels to form state when toggling
+            pnlDepositForm.Visible = true;
+            pnlDepositSuccess.Visible = false;
+            lblDepositError.Visible = false;
+            lblDepositError.Text = "";
+
+            pnlWithdrawForm.Visible = true;
+            pnlWithdrawSuccess.Visible = false;
+            lblWithdrawError.Visible = false;
+            lblWithdrawError.Text = "";
+
             if (actionIndex == 1)
             {
                 TransactionManager txManager = new TransactionManager();
-                lblWithdrawBalance.Text = txManager.GetBalance(Convert.ToInt32(Session["AccountNumber"])).ToString("N2");
+                lblWithdrawBalance.Text = txManager.GetBalance(
+                    Convert.ToInt32(Session["AccountNumber"])).ToString("N2");
             }
 
-            if (actionIndex != 2)
-                ResetSendPanel();
+            if (actionIndex != 2) ResetSendPanel();
         }
 
         private bool IsValidAmount(decimal amount)
@@ -160,35 +180,56 @@ namespace Main
         // ==========================================
         protected void btnSubmitDeposit_Click(object sender, EventArgs e)
         {
+            // BUG 2 FIX: Use inline error label instead of ShowAlert()
+            lblDepositError.Visible = false;
+            lblDepositError.Text = "";
+
             decimal amount;
-            if (decimal.TryParse(txtDepositAmount.Text, out amount))
+            if (!decimal.TryParse(txtDepositAmount.Text, out amount))
             {
-                if (!IsValidAmount(amount))
-                {
-                    ShowAlert("Deposit must be between ₱100 and ₱2,000, and divisible by 100.");
-                    return;
-                }
-
-                int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
-                TransactionManager txManager = new TransactionManager();
-
-                if (txManager.GetBalance(currentAccount) + amount > 10000)
-                {
-                    ShowAlert("Deposit failed. Maximum account balance cannot exceed ₱10,000.00.");
-                    return;
-                }
-
-                string result = txManager.ProcessDeposit(currentAccount, amount);
-                if (result == "Success")
-                {
-                    ShowAlert("Deposit successful!");
-                    txtDepositAmount.Text = "";
-                    mvActions.ActiveViewIndex = -1;
-                    BindCurrentTable();
-                }
-                else ShowAlert(result);
+                lblDepositError.Text = "Please enter a valid numeric amount.";
+                lblDepositError.Visible = true;
+                return;
             }
-            else ShowAlert("Please enter a valid numeric amount.");
+
+            if (!IsValidAmount(amount))
+            {
+                lblDepositError.Text = "Amount must be between ₱100 and ₱2,000, and divisible by 100.";
+                lblDepositError.Visible = true;
+                return;
+            }
+
+            int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
+            TransactionManager txManager = new TransactionManager();
+
+            if (txManager.GetBalance(currentAccount) + amount > 10000)
+            {
+                lblDepositError.Text = "Maximum account balance cannot exceed ₱10,000.00.";
+                lblDepositError.Visible = true;
+                return;
+            }
+
+            string result = txManager.ProcessDeposit(currentAccount, amount);
+            if (result == "Success")
+            {
+                txtDepositAmount.Text = "";
+                pnlDepositForm.Visible = false;
+                lblDepositSuccessAmount.Text = amount.ToString("N2");
+                pnlDepositSuccess.Visible = true;
+                BindCurrentTable();
+            }
+            else
+            {
+                lblDepositError.Text = result;
+                lblDepositError.Visible = true;
+            }
+        }
+
+        protected void btnDepositSuccessDone_Click(object sender, EventArgs e)
+        {
+            pnlDepositSuccess.Visible = false;
+            pnlDepositForm.Visible = true;
+            mvActions.ActiveViewIndex = -1;
         }
 
         // ==========================================
@@ -196,35 +237,56 @@ namespace Main
         // ==========================================
         protected void btnSubmitWithdraw_Click(object sender, EventArgs e)
         {
+            // BUG 2 FIX: Use inline error label instead of ShowAlert()
+            lblWithdrawError.Visible = false;
+            lblWithdrawError.Text = "";
+
             decimal amount;
-            if (decimal.TryParse(txtWithdrawAmount.Text, out amount))
+            if (!decimal.TryParse(txtWithdrawAmount.Text, out amount))
             {
-                if (!IsValidAmount(amount))
-                {
-                    ShowAlert("Withdrawal must be between ₱100 and ₱2,000, and divisible by 100.");
-                    return;
-                }
-
-                int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
-                TransactionManager txManager = new TransactionManager();
-
-                if (txManager.GetBalance(currentAccount) < amount)
-                {
-                    ShowAlert("Insufficient funds.");
-                    return;
-                }
-
-                string result = txManager.ProcessWithdraw(currentAccount, amount);
-                if (result == "Success")
-                {
-                    ShowAlert("Withdrawal successful!");
-                    txtWithdrawAmount.Text = "";
-                    mvActions.ActiveViewIndex = -1;
-                    BindCurrentTable();
-                }
-                else ShowAlert(result);
+                lblWithdrawError.Text = "Please enter a valid numeric amount.";
+                lblWithdrawError.Visible = true;
+                return;
             }
-            else ShowAlert("Please enter a valid numeric amount.");
+
+            if (!IsValidAmount(amount))
+            {
+                lblWithdrawError.Text = "Amount must be between ₱100 and ₱2,000, and divisible by 100.";
+                lblWithdrawError.Visible = true;
+                return;
+            }
+
+            int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
+            TransactionManager txManager = new TransactionManager();
+
+            if (txManager.GetBalance(currentAccount) < amount)
+            {
+                lblWithdrawError.Text = "Insufficient funds.";
+                lblWithdrawError.Visible = true;
+                return;
+            }
+
+            string result = txManager.ProcessWithdraw(currentAccount, amount);
+            if (result == "Success")
+            {
+                txtWithdrawAmount.Text = "";
+                pnlWithdrawForm.Visible = false;
+                lblWithdrawSuccessAmount.Text = amount.ToString("N2");
+                pnlWithdrawSuccess.Visible = true;
+                BindCurrentTable();
+            }
+            else
+            {
+                lblWithdrawError.Text = result;
+                lblWithdrawError.Visible = true;
+            }
+        }
+
+        protected void btnWithdrawSuccessDone_Click(object sender, EventArgs e)
+        {
+            pnlWithdrawSuccess.Visible = false;
+            pnlWithdrawForm.Visible = true;
+            mvActions.ActiveViewIndex = -1;
         }
 
         // ==========================================
@@ -232,31 +294,41 @@ namespace Main
         // ==========================================
         protected void btnVerifyReceiver_Click(object sender, EventArgs e)
         {
+            lblVerifyError.Visible = false;
+            lblVerifyError.Text = "";
+
             int receiverAccount;
-            if (int.TryParse(txtSendAccount.Text, out receiverAccount))
+            if (!int.TryParse(txtSendAccount.Text, out receiverAccount))
             {
-                int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
-
-                if (receiverAccount == currentAccount)
-                {
-                    ShowAlert("You cannot send money to yourself.");
-                    return;
-                }
-
-                UserManager userManager = new UserManager();
-                string receiverName = userManager.GetReceiverName(receiverAccount);
-
-                if (!string.IsNullOrEmpty(receiverName))
-                {
-                    lblReceiverAccountNo.Text = receiverAccount.ToString();
-                    lblReceiverName.Text = receiverName;
-                    pnlVerifyReceiver.Visible = false;
-                    pnlReceiverInfo.Visible = true;
-                    pnlSendMoneyForm.Visible = true;
-                }
-                else ShowAlert("Receiver account does not exist.");
+                lblVerifyError.Text = "Invalid Account Number format.";
+                lblVerifyError.Visible = true;
+                return;
             }
-            else ShowAlert("Invalid Account Number format.");
+
+            int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
+            if (receiverAccount == currentAccount)
+            {
+                lblVerifyError.Text = "You cannot send money to yourself.";
+                lblVerifyError.Visible = true;
+                return;
+            }
+
+            UserManager userManager = new UserManager();
+            string receiverName = userManager.GetReceiverName(receiverAccount);
+
+            if (!string.IsNullOrEmpty(receiverName))
+            {
+                lblReceiverAccountNo.Text = receiverAccount.ToString();
+                lblReceiverName.Text = receiverName;
+                pnlVerifyReceiver.Visible = false;
+                pnlReceiverInfo.Visible = true;
+                pnlSendMoneyForm.Visible = true;
+            }
+            else
+            {
+                lblVerifyError.Text = "Receiver account does not exist.";
+                lblVerifyError.Visible = true;
+            }
         }
 
         protected void btnCancelSend_Click(object sender, EventArgs e)
@@ -274,72 +346,100 @@ namespace Main
             pnlVerifyReceiver.Visible = true;
             pnlReceiverInfo.Visible = false;
             pnlSendMoneyForm.Visible = false;
+            pnlSendSuccess.Visible = false;
+            lblVerifyError.Visible = false;
+            lblVerifyError.Text = "";
+            lblSendError.Visible = false;
+            lblSendError.Text = "";
         }
 
         protected void btnSubmitSend_Click(object sender, EventArgs e)
         {
+            lblSendError.Visible = false;
+            lblSendError.Text = "";
+
             decimal amount;
-            if (decimal.TryParse(txtSendAmount.Text, out amount))
+            if (!decimal.TryParse(txtSendAmount.Text, out amount))
             {
-                if (!IsValidAmount(amount))
-                {
-                    ShowAlert("Amount must be between ₱100 and ₱2,000, and divisible by 100.");
-                    return;
-                }
-
-                int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
-                int receiverAccount = Convert.ToInt32(txtSendAccount.Text);
-                string password = txtSendPassword.Text;
-
-                UserManager userManager = new UserManager();
-                TransactionManager txManager = new TransactionManager();
-
-                if (receiverAccount == currentAccount)
-                {
-                    ShowAlert("You cannot send money to yourself.");
-                    return;
-                }
-
-                if (txManager.GetBalance(currentAccount) < amount)
-                {
-                    ShowAlert("Insufficient funds.");
-                    return;
-                }
-
-                if (!userManager.UserLogin(currentAccount, password))
-                {
-                    ShowAlert("Security Verification Failed: Incorrect password.");
-                    return;
-                }
-
-                if (txManager.GetBalance(receiverAccount) + amount > 10000)
-                {
-                    ShowAlert("Transfer failed. Recipient's balance would exceed ₱10,000.00.");
-                    return;
-                }
-
-                string result = txManager.SendCloudMoney(currentAccount, receiverAccount, amount);
-                if (result == "Success")
-                {
-                    ShowAlert("Money sent successfully!");
-                    ResetSendPanel();
-                    mvActions.ActiveViewIndex = -1;
-                    BindCurrentTable();
-                }
-                else ShowAlert(result);
+                lblSendError.Text = "Please enter a valid amount.";
+                lblSendError.Visible = true;
+                return;
             }
-            else ShowAlert("Please enter a valid amount.");
+
+            if (!IsValidAmount(amount))
+            {
+                lblSendError.Text = "Amount must be between ₱100 and ₱2,000, and divisible by 100.";
+                lblSendError.Visible = true;
+                return;
+            }
+
+            int currentAccount = Convert.ToInt32(Session["AccountNumber"]);
+            int receiverAccount = Convert.ToInt32(txtSendAccount.Text);
+            string password = txtSendPassword.Text;
+
+            UserManager userManager = new UserManager();
+            TransactionManager txManager = new TransactionManager();
+
+            if (receiverAccount == currentAccount)
+            {
+                lblSendError.Text = "You cannot send money to yourself.";
+                lblSendError.Visible = true;
+                return;
+            }
+
+            if (txManager.GetBalance(currentAccount) < amount)
+            {
+                lblSendError.Text = "Insufficient funds.";
+                lblSendError.Visible = true;
+                return;
+            }
+
+            if (!userManager.UserLogin(currentAccount, password))
+            {
+                lblSendError.Text = "Security Verification Failed: Incorrect password.";
+                lblSendError.Visible = true;
+                return;
+            }
+
+            if (txManager.GetBalance(receiverAccount) + amount > 10000)
+            {
+                lblSendError.Text = "Transfer failed. Recipient's balance would exceed ₱10,000.00.";
+                lblSendError.Visible = true;
+                return;
+            }
+
+            string receiverName = lblReceiverName.Text;
+            string result = txManager.SendCloudMoney(currentAccount, receiverAccount, amount);
+            if (result == "Success")
+            {
+                pnlReceiverInfo.Visible = false;
+                pnlSendMoneyForm.Visible = false;
+                lblSendSuccessAmount.Text = amount.ToString("N2");
+                lblSendSuccessReceiver.Text = receiverName;
+                pnlSendSuccess.Visible = true;
+                BindCurrentTable();
+
+                // BUG 3 FIX: Refresh bell badge after successful send so
+                // the receiver's notification badge updates on their next load
+                // and the sender's own dropdown stays current
+                RefreshNotifications();
+            }
+            else
+            {
+                lblSendError.Text = result;
+                lblSendError.Visible = true;
+            }
+        }
+
+        protected void btnSendSuccessDone_Click(object sender, EventArgs e)
+        {
+            ResetSendPanel();
+            mvActions.ActiveViewIndex = -1;
         }
 
         // ==========================================
         // DATA TABLES & FILTERING
         // ==========================================
-        private void ShowAlert(string message)
-        {
-            string script = $"alert('{message.Replace("'", "\\'")}');";
-            ClientScript.RegisterStartupScript(this.GetType(), "alert", script, true);
-        }
-
         protected void TableTab_Click(object sender, EventArgs e)
         {
             LinkButton clickedTab = (LinkButton)sender;
@@ -363,9 +463,7 @@ namespace Main
             ddlType.Items.Add(new ListItem("All", "All"));
 
             if (mvTables.ActiveViewIndex == 0)
-            {
                 lblFilterTitle.Text = "My Statement of Account";
-            }
             else if (mvTables.ActiveViewIndex == 1)
             {
                 lblFilterTitle.Text = "My Deposits or Withdrawals";

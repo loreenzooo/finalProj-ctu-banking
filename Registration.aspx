@@ -1,1 +1,171 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Registration.aspx.cs" Inherits="Main.Registration" %>  <!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head runat="server">     <title>Registration - CTU Bank</title>     <link href="../Content/styles/Login.css" rel="stylesheet" type="text/css" />     <link href="../Content/styles/Registration.css" rel="stylesheet" type="text/css" /> </head> <body>     <form id="form1" runat="server">         <div class="container">             <div id="reg-container">                 <div id="form">                                          <%-- REGISTRATION PANEL --%>                     <asp:Panel ID="pnlRegistration" runat="server">                         <h2 class="form-title">Create Account</h2>                         <div class="name-row">                             <div class="input-group">                                 <asp:TextBox ID="firstNameTxt" runat="server" CssClass="login-input" placeholder="First name"></asp:TextBox>                                 <asp:RequiredFieldValidator ID="rfvFirstName" runat="server"                                     ControlToValidate="firstNameTxt"                                     ErrorMessage="First name is required!"                                     Display="Dynamic"                                     ForeColor="Red" />                             </div>                              <div class="input-group">                                 <asp:TextBox ID="lastNameTxt" runat="server" CssClass="login-input" placeholder="Last name"></asp:TextBox>                                 <asp:RequiredFieldValidator ID="rfvLastName" runat="server"                                                                         ControlToValidate="lastNameTxt"                                     ErrorMessage="Last name is required!"                                     Display="Dynamic"                                     ForeColor="Red" />                             </div>                          </div>                         <%-- EMAIL --%>                         <asp:TextBox ID="emailTxt" runat="server" CssClass="login-input" placeholder="Email Address"></asp:TextBox>                         <asp:RequiredFieldValidator ID="rfvEmailTxt" runat="server"                             ControlToValidate="emailTxt"                             ErrorMessage="Email is required!"                             Display="Dynamic"                             ForeColor="Red">                         </asp:RequiredFieldValidator>                          <%--  EMAIL VALIDATOR (IF USED) --%>                         <asp:CustomValidator ID="cvEmailUnique" runat="server"                             ControlToValidate="emailTxt"                             ErrorMessage="This email is already registered!"                             Display="Dynamic"                             ForeColor="Red"                             OnServerValidate="Email_ServerValidate">                         </asp:CustomValidator>                          <%-- GENDER --%>                         <div class="gender-section">                             <span class="gender-header">Gender:</span>                             <div class="radio-row">                                 <asp:RadioButton ID="rbMale" runat="server" GroupName="Gender" Text="Male" CssClass="custom-radio" />                                 <asp:RadioButton ID="rbFemale" runat="server" GroupName="Gender" Text="Female" CssClass="custom-radio" />                             </div>                         </div>                         <%-- PASSWORD --%>                         <asp:TextBox ID="passwordTxt" runat="server" CssClass="login-input" TextMode="Password" placeholder="Password"></asp:TextBox>                         <asp:RequiredFieldValidator ID="rfvPasswordTxt" runat="server"                             ControlToValidate="passwordTxt"                             ErrorMessage="Password is required!"                             ForeColor="Red"                             Display="Dynamic">                         </asp:RequiredFieldValidator>                          <asp:CompareValidator ID="cvPassword" runat="server"                             ControlToValidate="confirmPassTxt"                             ControlToCompare="passwordTxt"                             ForeColor="Red"                             Display="Dynamic"                             ErrorMessage="Password does not match"></asp:CompareValidator>                         <asp:RegularExpressionValidator ID="revPasswordLength" runat="server"                             ControlToValidate="passwordTxt"                             ValidationExpression="^.{8,20}$"                             ForeColor="Red"                             Display="Dynamic"                             ErrorMessage="Password must be between 8 and 20 characters!">                         </asp:RegularExpressionValidator>                          <asp:TextBox ID="confirmPassTxt" runat="server" CssClass="login-input" TextMode="Password" placeholder="Confirm Password"></asp:TextBox>                         <asp:RequiredFieldValidator ID="rfvConfirmPassTxt" runat="server"                             ControlToValidate="confirmPassTxt"                             ErrorMessage="Confirm Password is required!"                             ForeColor="Red"                             Display="Dynamic">                         </asp:RequiredFieldValidator>                         <asp:Button ID="registerBtn" runat="server" CssClass="reg-btn" Text="Register" OnClick="registerBtn_Click" />                         <a href="Login.aspx" class="back-link">Already have an account? Login here</a>                     </asp:Panel>                      <%-- SUCCESS PANEL --%>                     <asp:Panel ID="pnlSuccess" runat="server" Visible="false" CssClass="success-message">                         <h2 class="success-title">Registration Successful!</h2>                         <p class="success-text">Welcome to CTU Bank. Your account has been created.</p>                         <p class="success-text">Please save your assigned PIN. You will use this as your <strong>Username</strong> to login.</p>                                                  <div class="pin-box">                             <asp:Label ID="lblPinDisplay" runat="server" Text="" CssClass="pin-text"></asp:Label>                         </div>                          <a href="Login.aspx" class="reg-btn login-redirect-btn">Go to Login</a>                     </asp:Panel>                  </div>             </div>         </div>     </form>      <script src="Content/bootstrap/bootstrap-5.2.3-dist/js/bootstrap.bundle.min.js"></script>     <script src="Content/script/ModalJS.js"></script> </body> </html>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Registration.aspx.cs" Inherits="Main.Registration" %>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Register - CTU E-Wallet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link href="Content/styles/Registration.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="page">
+
+            <%-- LEFT PANEL — Step Indicator --%>
+            <div class="left-panel">
+                <div class="badge">
+                    <div class="badge-dot"></div>
+                    CTU E-Wallet
+                </div>
+                <div class="brand-title">Create your account</div>
+                <div class="brand-sub">Open your free e-wallet account in minutes and start managing your funds securely.</div>
+
+                <div class="step">
+                    <asp:Label ID="lblStep1Circle" runat="server" CssClass="step-circle step-done" Text="✓"></asp:Label>
+                    <div>
+                        <div class="step-label">Personal info</div>
+                        <div class="step-desc">Your name and email</div>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <asp:Label ID="lblStep2Circle" runat="server" CssClass="step-circle step-active" Text="2"></asp:Label>
+                    <div>
+                        <div class="step-label">Security</div>
+                        <div class="step-desc">Create your password</div>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <asp:Label ID="lblStep3Circle" runat="server" CssClass="step-circle step-inactive" Text="3"></asp:Label>
+                    <div>
+                        <div class="step-label" style="color: #8d949e;">Account created</div>
+                        <div class="step-desc">Receive your account number</div>
+                    </div>
+                </div>
+            </div>
+
+            <%-- RIGHT PANEL --%>
+            <div class="right-panel">
+
+                <%-- REGISTRATION FORM --%>
+                <asp:Panel ID="pnlRegistration" runat="server">
+                    <div class="form-header">
+                        <h2>Let's get started</h2>
+                        <p>Fill in the details below to create your account.</p>
+                    </div>
+
+                    <div class="section-label">Personal information</div>
+
+                    <div class="name-row">
+                        <div class="field">
+                            <label>First name</label>
+                            <asp:TextBox ID="txtFirstName" runat="server" CssClass="form-input" placeholder="e.g. Juan"></asp:TextBox>
+                            <asp:RequiredFieldValidator ID="rfvFirstName" runat="server"
+                                ControlToValidate="txtFirstName"
+                                ErrorMessage="First name is required."
+                                CssClass="field-error"
+                                Display="Dynamic">
+                            </asp:RequiredFieldValidator>
+                        </div>
+                        <div class="field">
+                            <label>Last name</label>
+                            <asp:TextBox ID="txtLastName" runat="server" CssClass="form-input" placeholder="e.g. Dela Cruz"></asp:TextBox>
+                            <asp:RequiredFieldValidator ID="rfvLastName" runat="server"
+                                ControlToValidate="txtLastName"
+                                ErrorMessage="Last name is required."
+                                CssClass="field-error"
+                                Display="Dynamic">
+                            </asp:RequiredFieldValidator>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Email address</label>
+                        <asp:TextBox ID="txtEmail" runat="server" CssClass="form-input" placeholder="your@email.com"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvEmail" runat="server"
+                            ControlToValidate="txtEmail"
+                            ErrorMessage="Email is required."
+                            CssClass="field-error"
+                            Display="Dynamic">
+                        </asp:RequiredFieldValidator>
+                        <asp:CustomValidator ID="cvEmailUnique" runat="server"
+                            ControlToValidate="txtEmail"
+                            ErrorMessage="This email is already registered."
+                            CssClass="field-error"
+                            Display="Dynamic"
+                            OnServerValidate="Email_ServerValidate">
+                        </asp:CustomValidator>
+                    </div>
+
+                    <div class="section-label">Gender</div>
+                    <div class="gender-row">
+                        <asp:RadioButton ID="rbMale" runat="server" GroupName="Gender" Text="Male" CssClass="gender-chip" />
+                        <asp:RadioButton ID="rbFemale" runat="server" GroupName="Gender" Text="Female" CssClass="gender-chip" />
+                    </div>
+
+                    <div class="section-label">Security</div>
+
+                    <div class="field">
+                        <label>Password</label>
+                        <asp:TextBox ID="txtPassword" runat="server" CssClass="form-input" TextMode="Password" placeholder="8–20 characters"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvPassword" runat="server"
+                            ControlToValidate="txtPassword"
+                            ErrorMessage="Password is required."
+                            CssClass="field-error"
+                            Display="Dynamic">
+                        </asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="revPasswordLength" runat="server"
+                            ControlToValidate="txtPassword"
+                            ValidationExpression="^.{8,20}$"
+                            ErrorMessage="Password must be between 8 and 20 characters."
+                            CssClass="field-error"
+                            Display="Dynamic">
+                        </asp:RegularExpressionValidator>
+                    </div>
+
+                    <div class="field">
+                        <label>Confirm password</label>
+                        <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="form-input" TextMode="Password" placeholder="Re-enter password"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvConfirmPassword" runat="server"
+                            ControlToValidate="txtConfirmPassword"
+                            ErrorMessage="Please confirm your password."
+                            CssClass="field-error"
+                            Display="Dynamic">
+                        </asp:RequiredFieldValidator>
+                        <asp:CompareValidator ID="cvPasswordMatch" runat="server"
+                            ControlToValidate="txtConfirmPassword"
+                            ControlToCompare="txtPassword"
+                            ErrorMessage="Passwords do not match."
+                            CssClass="field-error"
+                            Display="Dynamic">
+                        </asp:CompareValidator>
+                    </div>
+
+                    <asp:Button ID="btnRegister" runat="server" CssClass="btn-register" Text="Create Account" OnClick="btnRegister_Click" />
+                    <a href="Login.aspx" class="back-link">Already have an account? Login here</a>
+                </asp:Panel>
+
+                <%-- SUCCESS PANEL --%>
+                <asp:Panel ID="pnlSuccess" runat="server" Visible="false" CssClass="success-panel">
+                    <div class="success-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#2DD253" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h2 class="success-title">Account Created!</h2>
+                    <p class="success-sub">Welcome to CTU E-Wallet. Your account number has been assigned.<br />Save it — you will need this to log in.</p>
+
+                    <div class="acct-box">
+                        <div class="acct-label">Your account number</div>
+                        <asp:Label ID="lblAccountNumber" runat="server" CssClass="acct-number"></asp:Label>
+                    </div>
+
+                    <p class="acct-hint">Keep this number safe. You will need it every time you log in.</p>
+                    <a href="Login.aspx" class="btn-register" style="text-align:center; text-decoration:none; display:block;">Go to Login</a>
+                </asp:Panel>
+
+            </div>
+        </div>
+    </form>
+</body>
+</html>

@@ -45,18 +45,18 @@ namespace Main.Classes
         }
 
         // User Login Function
-        public bool UserLogin(int pin, string password)
+        // After
+        public bool UserLogin(int accountNumber, string password)
         {
             using (SqlConnection con = DBConnection.GetConnection())
             {
                 con.Open();
-                string query = "SELECT COUNT(1) FROM Users WHERE account_number = @pin AND password_hash = @password";
+                string query = "SELECT COUNT(1) FROM Users WHERE account_number = @AccountNumber AND password_hash = @Password";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@pin", pin);
-                    cmd.Parameters.AddWithValue("@password", password);
-                    int matchCtr = Convert.ToInt32(cmd.ExecuteScalar());
-                    return matchCtr > 0;
+                    cmd.Parameters.AddWithValue("@AccountNumber", accountNumber);
+                    cmd.Parameters.AddWithValue("@Password", password);
+                    return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
                 }
             }
         }

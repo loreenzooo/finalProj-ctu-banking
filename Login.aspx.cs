@@ -1,49 +1,44 @@
-﻿using Main.Classes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
 using System.Web.UI;
-using System.Web.UI.WebControls;
+using Main.Classes;
 
 namespace Main
 {
-    public partial class Login : System.Web.UI.Page
+    public partial class Login : Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
         }
 
-        protected void createAcc_Click(object sender, EventArgs e)
+        protected void btnLogin_Click(object sender, EventArgs e)
         {
-            Response.Redirect("Registration.aspx");
-        }
+            lblError.Text = "";
 
-        protected void loginBtn_Click(object sender, EventArgs e)
-        {
-            string password = passwordTxt.Text.Trim();
-            errorLbl.Text = "";
-
-            if (!int.TryParse(pinTxt.Text.Trim(), out int pin))
+            if (!int.TryParse(txtAccountNumber.Text.Trim(), out int accountNumber))
             {
-                errorLbl.Text = "Please enter a valid numeric PIN";
+                lblError.Text = "Please enter a valid numeric Account Number.";
                 return;
             }
 
-            UserManager userManager = new UserManager();
-            bool isSuccessLogin = userManager.UserLogin(pin, password);
+            string password = txtPassword.Text.Trim();
 
-            if (isSuccessLogin)
+            UserManager userManager = new UserManager();
+            bool loginSuccess = userManager.UserLogin(accountNumber, password);
+
+            if (loginSuccess)
             {
-                // FIX IS HERE: Changed "LoggedInPin" to "AccountNumber"
-                Session["AccountNumber"] = pin;
+                Session["AccountNumber"] = accountNumber;
                 Response.Redirect("Index.aspx");
             }
             else
             {
-                errorLbl.Text = "Invalid PIN or Password. Please Try again.";
+                lblError.Text = "Invalid Account Number or Password. Please try again.";
             }
+        }
+
+        protected void btnCreateAccount_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("Registration.aspx");
         }
     }
 }

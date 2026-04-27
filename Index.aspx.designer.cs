@@ -42,15 +42,6 @@ namespace Main
         protected global::System.Web.UI.WebControls.LinkButton btnSidebarManage;
 
         /// <summary>
-        /// btnSidebarNotifications control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnSidebarNotifications;
-
-        /// <summary>
         /// btnSidebarChangePassword control.
         /// </summary>
         /// <remarks>
@@ -76,6 +67,33 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblUserName;
+
+        /// <summary>
+        /// lblNotifBadge control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblNotifBadge;
+
+        /// <summary>
+        /// lblNoNotifications control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblNoNotifications;
+
+        /// <summary>
+        /// rptNotifications control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptNotifications;
 
         /// <summary>
         /// lblProfileInitial control.
@@ -213,6 +231,15 @@ namespace Main
         protected global::System.Web.UI.WebControls.View vwDeposit;
 
         /// <summary>
+        /// pnlDepositForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlDepositForm;
+
+        /// <summary>
         /// txtDepositAmount control.
         /// </summary>
         /// <remarks>
@@ -220,6 +247,15 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtDepositAmount;
+
+        /// <summary>
+        /// lblDepositError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblDepositError;
 
         /// <summary>
         /// btnSubmitDeposit control.
@@ -231,6 +267,33 @@ namespace Main
         protected global::System.Web.UI.WebControls.Button btnSubmitDeposit;
 
         /// <summary>
+        /// pnlDepositSuccess control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlDepositSuccess;
+
+        /// <summary>
+        /// lblDepositSuccessAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblDepositSuccessAmount;
+
+        /// <summary>
+        /// btnDepositSuccessDone control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDepositSuccessDone;
+
+        /// <summary>
         /// vwWithdraw control.
         /// </summary>
         /// <remarks>
@@ -238,6 +301,15 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.View vwWithdraw;
+
+        /// <summary>
+        /// pnlWithdrawForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlWithdrawForm;
 
         /// <summary>
         /// lblWithdrawBalance control.
@@ -258,6 +330,15 @@ namespace Main
         protected global::System.Web.UI.WebControls.TextBox txtWithdrawAmount;
 
         /// <summary>
+        /// lblWithdrawError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblWithdrawError;
+
+        /// <summary>
         /// btnSubmitWithdraw control.
         /// </summary>
         /// <remarks>
@@ -265,6 +346,33 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnSubmitWithdraw;
+
+        /// <summary>
+        /// pnlWithdrawSuccess control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlWithdrawSuccess;
+
+        /// <summary>
+        /// lblWithdrawSuccessAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblWithdrawSuccessAmount;
+
+        /// <summary>
+        /// btnWithdrawSuccessDone control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnWithdrawSuccessDone;
 
         /// <summary>
         /// vwSend control.
@@ -301,6 +409,15 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnVerifyReceiver;
+
+        /// <summary>
+        /// lblVerifyError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblVerifyError;
 
         /// <summary>
         /// pnlReceiverInfo control.
@@ -357,6 +474,15 @@ namespace Main
         protected global::System.Web.UI.WebControls.TextBox txtSendPassword;
 
         /// <summary>
+        /// lblSendError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSendError;
+
+        /// <summary>
         /// btnSubmitSend control.
         /// </summary>
         /// <remarks>
@@ -373,6 +499,42 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCancelSend;
+
+        /// <summary>
+        /// pnlSendSuccess control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlSendSuccess;
+
+        /// <summary>
+        /// lblSendSuccessAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSendSuccessAmount;
+
+        /// <summary>
+        /// lblSendSuccessReceiver control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSendSuccessReceiver;
+
+        /// <summary>
+        /// btnSendSuccessDone control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSendSuccessDone;
 
         /// <summary>
         /// btnTabStatement control.
@@ -517,32 +679,5 @@ namespace Main
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvTransactions;
-
-        /// <summary>
-        /// vwNotifications control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.View vwNotifications;
-
-        /// <summary>
-        /// lblNoNotifications control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblNoNotifications;
-
-        /// <summary>
-        /// rptNotifications control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptNotifications;
     }
 }

@@ -1,89 +1,277 @@
-﻿body, form{
-    height:100%;
+﻿/* ==========================================
+   Base & Reset
+   ========================================== */
+html, body, form {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
 }
 
 body {
     background-color: #121A2F;
-    margin: 0 auto;
     font-family: 'Inter', sans-serif;
-    
-}
-.container {
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
-    height:100vh;
-}
-#login-container {
-    background-color: #202F55;
-    width: 500px;
-    height: 500px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-#form {
-    display: flex;
-    flex-direction: column; 
     justify-content: center;
-    align-items: center;
-    height: 100%; 
-    padding: 0 40px; 
 }
 
-.login-input {
+form {
     width: 100%;
-    padding: 15px 20px;
-    font-size: 16px;
-    background-color: #f0f2f5; 
-    border: 1px solid #dddfe2;
-    border-radius: 12px; 
-    outline: none;
-    box-sizing: border-box;
-    margin-bottom: 15px; 
-    transition: border 0.2s ease-in-out;
-}
-.login-input:focus {
-        border: 1px solid #1877f2; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 }
 
-.login-input::placeholder {
-        color: #8d949e;
+/* ==========================================
+   Page Layout — Split Panel
+   ========================================== */
+.page {
+    display: flex;
+    width: 860px;
+    min-height: 560px;
+    background: #202F55;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid #1A2645;
 }
 
-#loginBtn {
-    background-color: #4163BF !important; 
-    border: none;
+/* ==========================================
+   Left Brand Panel
+   ========================================== */
+.left-panel {
+    width: 340px;
+    flex-shrink: 0;
+    background: #202F55;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 50px 40px;
+    border-right: 1px solid #1A2645;
 }
 
-#createAcc {
-    background-color: #2DD253 !important;
-    border: none;
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(235, 168, 0, 0.1);
+    border: 1px solid rgba(235, 168, 0, 0.25);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #EBA800;
+    margin-bottom: 20px;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-#createAcc, #loginBtn {
-    margin-top: 20px;
+.badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #EBA800;
+}
+
+.brand-title {
+    font-size: 26px;
+    font-weight: 700;
     color: #E7E7E7;
-    padding: 12px; 
-    border-radius: 8px;
-    width: 100%;
-    cursor: pointer;
-    
-    transition: all 0.3s ease;
+    margin-bottom: 10px;
 }
 
-    #loginBtn:hover {
-        background-color: #34509D;
-        
+.brand-sub {
+    font-size: 14px;
+    color: #8d949e;
+    line-height: 1.7;
+    margin-bottom: 40px;
+}
+
+/* Feature rows */
+.feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.feature-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(65, 99, 191, 0.15);
+    border: 1px solid #34509D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+    .feature-icon svg {
+        width: 16px;
+        height: 16px;
     }
 
-    #createAcc:hover {
-        background-color: #25AD44;
+.feature-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #E7E7E7;
+}
+
+.feature-desc {
+    font-size: 12px;
+    color: #8d949e;
+    margin-top: 3px;
+}
+
+/* ==========================================
+   Right Form Panel
+   ========================================== */
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 50px;
+}
+
+.form-header {
+    margin-bottom: 32px;
+}
+
+    .form-header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #EBA800;
+        margin-bottom: 6px;
     }
 
-    #loginBtn:hover, #createAcc:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        transform: translateY(-2px);
+    .form-header p {
+        font-size: 13px;
+        color: #8d949e;
     }
 
+/* ==========================================
+   Fields
+   ========================================== */
+.field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
 
+    .field label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #8d949e;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 6px;
+    }
 
+.form-input {
+    background: #1A2645;
+    border: 1px solid #34509D;
+    border-radius: 8px;
+    padding: 13px 16px;
+    color: #E7E7E7;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+    .form-input:focus {
+        border-color: #EBA800;
+    }
+
+    .form-input::placeholder {
+        color: #3d4f6e;
+    }
+
+.field-error {
+    font-size: 12px;
+    color: #ff6b6b;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+.login-error {
+    display: block;
+    font-size: 13px;
+    color: #ff6b6b;
+    font-weight: 600;
+    background: rgba(255, 107, 107, 0.08);
+    border: 1px solid rgba(255, 107, 107, 0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+}
+
+/* ==========================================
+   Buttons
+   ========================================== */
+.btn-login {
+    width: 100%;
+    padding: 14px;
+    background: #4163BF;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+    .btn-login:hover {
+        background: #34509D;
+        transform: translateY(-1px);
+    }
+
+.btn-create {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: #2DD253;
+    border: 1px solid #2DD253;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+    .btn-create:hover {
+        background: rgba(45, 210, 83, 0.08);
+        transform: translateY(-1px);
+    }
+
+/* ==========================================
+   Divider
+   ========================================== */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: #1A2645;
+}
+
+.divider span {
+    font-size: 12px;
+    color: #8d949e;
+}

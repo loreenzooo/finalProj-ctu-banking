@@ -1,156 +1,370 @@
-﻿#reg-container {
-    background-color: #202F55;
-    width: 500px;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+﻿/* ==========================================
+   Base & Reset
+   ========================================== */
+html, body, form {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
 }
 
-    /* override login.css alignment */
-    #reg-container #form {
-        align-items: stretch;
-        height: auto; /* Stops the form from stretching vertically */
-        padding: 0; /* Removes the double horizontal padding */
+body {
+    background-color: #121A2F;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+form {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 30px 0;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   Page Layout — Split Panel
+   ========================================== */
+.page {
+    display: flex;
+    width: 900px;
+    min-height: 640px;
+    background: #121A2F;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid #1A2645;
+}
+
+/* ==========================================
+   Left Panel — Step Indicator
+   ========================================== */
+.left-panel {
+    width: 320px;
+    flex-shrink: 0;
+    background: #202F55;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 50px 40px;
+    border-right: 1px solid #1A2645;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(235, 168, 0, 0.1);
+    border: 1px solid rgba(235, 168, 0, 0.25);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #EBA800;
+    margin-bottom: 20px;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #EBA800;
+}
+
+.brand-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #E7E7E7;
+    margin-bottom: 10px;
+}
+
+.brand-sub {
+    font-size: 13px;
+    color: #8d949e;
+    line-height: 1.7;
+    margin-bottom: 36px;
+}
+
+/* Steps */
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.step-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    text-align: center;
+    line-height: 32px;
+}
+
+.step-done {
+    background: #2DD253;
+    color: #121A2F;
+}
+
+.step-active {
+    background: #EBA800;
+    color: #121A2F;
+}
+
+.step-inactive {
+    background: #1A2645;
+    border: 1px solid #34509D;
+    color: #8d949e;
+}
+
+.step-connector {
+    width: 1px;
+    height: 22px;
+    background: #34509D;
+    margin-left: 15px;
+    margin: 6px 0 6px 15px;
+}
+
+.step-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #E7E7E7;
+    margin-top: 6px;
+}
+
+.step-desc {
+    font-size: 12px;
+    color: #8d949e;
+    margin-top: 3px;
+}
+
+/* ==========================================
+   Right Form Panel
+   ========================================== */
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 50px;
+    overflow-y: auto;
+}
+
+.form-header {
+    margin-bottom: 24px;
+}
+
+    .form-header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #EBA800;
+        margin-bottom: 6px;
     }
 
-#form h2 {
-    margin-bottom: 25px;
-    text-align: center;
+    .form-header p {
+        font-size: 13px;
+        color: #8d949e;
+    }
+
+.section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4163BF;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    margin-top: 20px;
 }
 
-/* name row */
+/* ==========================================
+   Fields
+   ========================================== */
 .name-row {
     display: flex;
-    width: 100%;
-    gap: 15px;
+    gap: 14px;
 }
 
-/* columns */
-.input-group {
+.field {
+    display: flex;
+    flex-direction: column;
     flex: 1;
+    margin-bottom: 14px;
 }
 
-/* ensure inputs stay half width */
-.name-row .login-input {
-    width: 100%;
-}
+    .field label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #8d949e;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 6px;
+    }
 
-
-
-/* register button */
-.reg-btn {
-    background-color: #2DD253;
+.form-input {
+    background: #1A2645;
+    border: 1px solid #34509D;
+    border-radius: 8px;
+    padding: 11px 14px;
     color: #E7E7E7;
-    padding: 15px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+    .form-input:focus {
+        border-color: #EBA800;
+    }
+
+    .form-input::placeholder {
+        color: #3d4f6e;
+    }
+
+.field-error {
+    font-size: 12px;
+    color: #ff6b6b;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+/* ==========================================
+   Gender Chips
+   ========================================== */
+.gender-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.gender-chip {
+    color: #8d949e;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    .gender-chip input[type="radio"] {
+        accent-color: #4163BF;
+        width: 15px;
+        height: 15px;
+        margin-right: 6px;
+        cursor: pointer;
+    }
+
+/* ==========================================
+   Buttons
+   ========================================== */
+.btn-register {
+    width: 100%;
+    padding: 13px;
+    background: #4163BF;
+    color: #fff;
     border: none;
     border-radius: 8px;
-    width: 100%;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
-    margin-top: 10px;
-    font-size: 16px;
-    transition: all 0.3s ease;
+    margin-top: 18px;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    box-sizing: border-box;
 }
 
-    .reg-btn:hover {
-        background-color: #25AD44;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    .btn-register:hover {
+        background: #34509D;
+        transform: translateY(-1px);
     }
 
 .back-link {
-    margin-top: 20px;
+    font-size: 13px;
     color: #8d949e;
     text-decoration: none;
-    font-size: 14px;
+    text-align: center;
+    margin-top: 14px;
+    transition: color 0.2s ease;
 }
 
     .back-link:hover {
         color: #E7E7E7;
     }
 
-/* --- GENDER SECTION & RADIO BUTTONS --- */
-.gender-section {
+/* ==========================================
+   Success Panel
+   ========================================== */
+.success-panel {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    width: 100%;
-    margin-bottom: 15px; /* Matches .login-input margin-bottom */
-    box-sizing: border-box;
-}
-
-.gender-header {
-    color: #8d949e; /* Matches your login-input placeholder color */
-    font-size: 16px; /* Matches your login-input font size */
-    margin-right: 20px;
-}
-
-.radio-row {
-    display: flex;
-    align-items: center;
-    gap: 25px; /* Spacing between Male and Female options */
-}
-
-/* Styles the ASP.NET wrapper span and label */
-.custom-radio {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Spacing between the circle and the text */
-    color: #E7E7E7; /* Matches your button text color for readability */
-    font-size: 16px;
-    cursor: pointer;
-}
-
-    /* Basic sizing for the native radio circle */
-    .custom-radio input[type="radio"] {
-        margin: 0;
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-    }
-
-/* Override inline form title color */
-.form-title {
-    color: #EBA800;
-    margin-bottom: 25px;
+    justify-content: center;
     text-align: center;
+    height: 100%;
 }
 
-/* --- SUCCESS PANEL --- */
-.success-message {
-    text-align: center;
-    width: 100%;
-}
-
-.success-title {
-    color: #2DD253;
+.success-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(45, 210, 83, 0.12);
+    border: 2px solid #2DD253;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 20px;
 }
 
-.success-text {
+.success-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2DD253;
+    margin-bottom: 10px;
+}
+
+.success-sub {
+    font-size: 14px;
     color: #8d949e;
-    margin-bottom: 15px;
-    font-size: 16px;
-    line-height: 1.5;
+    line-height: 1.7;
+    margin-bottom: 28px;
 }
 
-.pin-box {
-    background-color: #121A2F;
+.acct-box {
+    background: #1A2645;
     border: 2px dashed #EBA800;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
+    border-radius: 12px;
+    padding: 24px 48px;
+    margin-bottom: 12px;
 }
 
-.pin-text {
-    font-size: 32px;
-    font-weight: bold;
+.acct-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8d949e;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.acct-number {
+    font-size: 36px;
+    font-weight: 700;
     color: #EBA800;
-    letter-spacing: 5px;
+    letter-spacing: 6px;
 }
 
-.login-redirect-btn {
-    display: block;
-    text-align: center;
-    text-decoration: none;
-    margin-top: 30px;
-    box-sizing: border-box;
+.acct-hint {
+    font-size: 12px;
+    color: #8d949e;
+    margin-bottom: 28px;
 }
