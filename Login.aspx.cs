@@ -17,6 +17,7 @@ namespace Main
             if (!int.TryParse(txtAccountNumber.Text.Trim(), out int accountNumber))
             {
                 lblError.Text = "Please enter a valid numeric Account Number.";
+                lblError.Visible = true;
                 return;
             }
 
@@ -33,6 +34,7 @@ namespace Main
             else
             {
                 lblError.Text = "Invalid Account Number or Password. Please try again.";
+                lblError.Visible = true;
             }
         }
 

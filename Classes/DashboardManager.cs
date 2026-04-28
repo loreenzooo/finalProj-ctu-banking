@@ -17,6 +17,7 @@ namespace Main.Classes
 
             using (SqlConnection conn = DBConnection.GetConnection())
             {
+                conn.Open();
                 string query = @"
                                 SELECT
                                account_number,
