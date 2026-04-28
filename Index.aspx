@@ -175,13 +175,11 @@
                                     <asp:View ID="vwSend" runat="server">
                                         <div class="action-panel">
                                             <h3>Send CloudMoney</h3>
-                                            <asp:Panel ID="pnlVerifyReceiver" runat="server">
-                                                <div class="verify-row">
-                                                    <asp:TextBox ID="txtSendAccount" runat="server" CssClass="form-input verify-input" placeholder="Recipient Account No."></asp:TextBox>
-                                                    <asp:Button ID="btnVerifyReceiver" runat="server" Text="Verify" CssClass="btn-verify" OnClick="btnVerifyReceiver_Click" />
-                                                </div>
+                                           <asp:Panel ID="pnlVerifyReceiver" runat="server">
+                                                <asp:TextBox ID="txtSendAccount" runat="server" CssClass="form-input verify-input" placeholder="Recipient Account No."></asp:TextBox>
+                                                <asp:Button ID="btnVerifyReceiver" runat="server" Text="Verify" CssClass="btn-verify" OnClick="btnVerifyReceiver_Click" />
                                                 <asp:Label ID="lblVerifyError" runat="server" CssClass="inline-error" Visible="false"></asp:Label>
-                                            </asp:Panel>
+                                           </asp:Panel>
                                             <asp:Panel ID="pnlReceiverInfo" runat="server" Visible="false">
                                                 <div class="receiver-info-panel">
                                                     <span class="info-label">Sending To</span>
