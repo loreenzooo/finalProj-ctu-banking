@@ -6,9 +6,8 @@ namespace Main.Classes
 {
     public class TransactionManager
     {
-        // ==========================================
-        // TRANSACTION PROCESSING
-        // ==========================================
+
+        // DEPOSIT
         public string ProcessDeposit(int accountNumber, decimal amount)
         {
             using (SqlConnection conn = DBConnection.GetConnection())
@@ -45,6 +44,7 @@ namespace Main.Classes
             }
         }
 
+        // WITHDRAW
         public string ProcessWithdraw(int accountNumber, decimal amount)
         {
             using (SqlConnection conn = DBConnection.GetConnection())
@@ -81,6 +81,7 @@ namespace Main.Classes
             }
         }
 
+        // CLOUD MONEY
         public string SendCloudMoney(int senderAccountNo, int receiverAccountNo, decimal amount)
         {
             using (SqlConnection conn = DBConnection.GetConnection())
@@ -126,9 +127,7 @@ namespace Main.Classes
             }
         }
 
-        // ==========================================
-        // HELPERS FOR DASHBOARD STATS
-        // ==========================================
+        // DASHBOARD GETBALANCE
         public decimal GetBalance(int accountNumber)
         {
             using (SqlConnection conn = DBConnection.GetConnection())
@@ -144,6 +143,7 @@ namespace Main.Classes
             }
         }
 
+        // DASHBOARD GETTOTALSENT
         public decimal GetTotalSent(int accountNumber)
         {
             using (SqlConnection conn = DBConnection.GetConnection())
@@ -159,12 +159,7 @@ namespace Main.Classes
             }
         }
 
-        // ==========================================
         // DASHBOARD NOTIFICATIONS
-        // ==========================================
-
-        // Returns the 5 most recent incoming CloudMoney transfers for the dashboard.
-        // Only fetches Transfer type where the user is the receiver (not the sender).
         public DataTable GetRecentReceivedTransfers(int accountNumber)
         {
             DataTable dt = new DataTable();
@@ -190,20 +185,7 @@ namespace Main.Classes
             return dt;
         }
 
-        // ==========================================
         // TABLE FETCHING
-        // ==========================================
-
-        // FIX 1 (Bug 1): Running balance using SUM() OVER() window function.
-        // FIX 4 (SeqNum): ROW_NUMBER() as SeqNum.
-        // FIX 5 (Date filter + running balance): Subquery computes full running balance
-        //        first, then outer query applies date filter so Balance is always correct.
-        // FIX 6 (Description): Transfer rows now show "Sent" or "Received" instead of
-        //        "Transfer" — determined by whether the user is the sender or receiver.
-        //   OLD: transaction_type AS Description  ->  always shows "Transfer"
-        //   NEW: CASE WHEN transaction_type = 'Transfer'
-        //              THEN CASE WHEN sender_account = @AccountNo THEN 'Sent' ELSE 'Received' END
-        //             ELSE transaction_type  ->  Deposit / Withdraw unchanged
         public DataTable GetStatement(int accountNumber, string fromDate, string toDate)
         {
             DataTable dt = new DataTable();
@@ -222,7 +204,7 @@ namespace Main.Classes
                             ROW_NUMBER() OVER (ORDER BY transaction_time DESC, transaction_id DESC) AS SeqNum,
                             transaction_time AS Date,
 
-                            -- FIX 6: Show Sent/Received for transfers instead of Transfer
+                            
                             CASE
                                 WHEN transaction_type = 'Transfer' THEN
                                     CASE WHEN sender_account = @AccountNo THEN 'Sent' ELSE 'Received' END
@@ -263,29 +245,18 @@ namespace Main.Classes
             return dt;
         }
 
-        // FIX 2 (Bug 2): toDate + " 23:59:59" to include the full end day.
-        // FIX 3 (SeqNum): ROW_NUMBER() for clean per-table sequence numbers.
-        // FIX 7 (Type filter + SeqNum): Wrapped in subquery so ROW_NUMBER() runs
-        //        AFTER the type filter is applied. Without this, selecting "Deposit"
-        //        would still number rows based on ALL deposits+withdrawals before
-        //        filtering, causing gaps (e.g. 1, 3, 5 instead of 1, 2, 3).
-        //   OLD: ROW_NUMBER() at top level then AND transaction_type = 'Deposit' appended
-        //        -> ROW_NUMBER counts all rows first, filter applied after = wrong SeqNums
-        //   NEW: Filter inside inner query first, then ROW_NUMBER() in outer query
-        //        -> ROW_NUMBER only counts the rows that pass the filter = always 1, 2, 3...
+
         public DataTable GetDepositsWithdrawals(int accountNumber, string fromDate, string toDate, string type)
         {
             DataTable dt = new DataTable();
             using (SqlConnection conn = DBConnection.GetConnection())
             {
                 // Build a single flat WHERE clause with all conditions.
-                // ROW_NUMBER() is computed in the outer SELECT after all filters are applied,
-                // so SeqNum is always 1, 2, 3... for exactly the rows returned.
                 string whereClause = @"
                     WHERE (sender_account = @AccountNo OR receiver_account = @AccountNo)
                     AND transaction_type IN ('Deposit', 'Withdraw')";
 
-                // Inline type filter using literal SQL values (safe — only our own constants, never user input)
+                // Inline type filter using literal SQL values
                 if (type == "D") whereClause += " AND transaction_type = 'Deposit'";
                 else if (type == "W") whereClause += " AND transaction_type = 'Withdraw'";
                 if (!string.IsNullOrEmpty(fromDate)) whereClause += " AND transaction_time >= @FromDate";
@@ -312,9 +283,7 @@ namespace Main.Classes
             return dt;
         }
 
-        // FIX 2 (Bug 2): toDate + " 23:59:59" to include the full end day.
-        // FIX 3 (SeqNum): Same subquery pattern as GetDepositsWithdrawals —
-        //        ROW_NUMBER() runs after all filters so SeqNum is always 1, 2, 3...
+        // REPORT: SENT OR RECEIVED TRANSACTIONS
         public DataTable GetTransfers(int accountNumber, string fromDate, string toDate, string type)
         {
             DataTable dt = new DataTable();

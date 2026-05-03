@@ -5,6 +5,8 @@ namespace Main.Classes
 {
     public class UserManager
     {
+
+        // REGISTER USER
         public string RegisterUser(string firstName, string lastName, string email, string password)
         {
             using (SqlConnection con = DBConnection.GetConnection())
@@ -29,6 +31,7 @@ namespace Main.Classes
             return null;
         }
 
+        // CHECK EMAIL IF IT'S ALREADY USED
         public bool IsEmailUnique(string email)
         {
             using (SqlConnection con = DBConnection.GetConnection())
@@ -44,8 +47,7 @@ namespace Main.Classes
             }
         }
 
-        // User Login Function
-        // After
+        // USER LOGIN
         public bool UserLogin(int accountNumber, string password)
         {
             using (SqlConnection con = DBConnection.GetConnection())
@@ -61,7 +63,7 @@ namespace Main.Classes
             }
         }
 
-        // Change Password Function
+        // CHANGE PASSWORD 
         public string ChangePassword(int accountNumber, string newPassword)
         {
             using (SqlConnection conn = DBConnection.GetConnection())
@@ -129,6 +131,7 @@ namespace Main.Classes
             return null; // Returns null if account does not exist
         }
 
+        
         public string GetUserFirstName(int accountNumber)
         {
             using (SqlConnection con = DBConnection.GetConnection())

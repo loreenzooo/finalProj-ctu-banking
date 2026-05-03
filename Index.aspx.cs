@@ -39,9 +39,8 @@ namespace Main
             }
         }
 
-        // ==========================================
+
         // SIDEBAR NAVIGATION
-        // ==========================================
         protected void Sidebar_Click(object sender, EventArgs e)
         {
             LinkButton clickedBtn = (LinkButton)sender;
@@ -67,9 +66,7 @@ namespace Main
             Response.Redirect("Login.aspx");
         }
 
-        // ==========================================
         // DASHBOARD STATS
-        // ==========================================
         private void LoadDashboardStats()
         {
             int currentAccountNo = Convert.ToInt32(Session["AccountNumber"]);
@@ -91,9 +88,8 @@ namespace Main
                 lblDashInitial.Text = name.Substring(0, 1).ToUpper();
         }
 
-        // ==========================================
+
         // NOTIFICATIONS
-        // ==========================================
         private void LoadNotifications(int accountNo, UserManager userManager, DataTable rawNotifs)
         {
             if (rawNotifs.Rows.Count == 0)
@@ -136,12 +132,7 @@ namespace Main
             LoadNotifications(currentAccountNo, userManager, notifs);
         }
 
-        // ==========================================
         // ACTION PANELS (DEPOSIT / WITHDRAW / SEND)
-        // ==========================================
-
-        // BUG 1 FIX: Reset all success panels when switching between action buttons
-        // so a completed deposit success screen doesn't bleed into the withdraw panel.
         protected void Action_Click(object sender, EventArgs e)
         {
             Button clickedBtn = (Button)sender;
@@ -149,7 +140,6 @@ namespace Main
 
             mvActions.ActiveViewIndex = (mvActions.ActiveViewIndex == actionIndex) ? -1 : actionIndex;
 
-            // Always reset deposit and withdraw panels to form state when toggling
             pnlDepositForm.Visible = true;
             pnlDepositSuccess.Visible = false;
             lblDepositError.Visible = false;
@@ -164,7 +154,7 @@ namespace Main
             {
                 TransactionManager txManager = new TransactionManager();
                 lblWithdrawBalance.Text = txManager.GetBalance(
-                    Convert.ToInt32(Session["AccountNumber"])).ToString("N2");
+                Convert.ToInt32(Session["AccountNumber"])).ToString("N2");
             }
 
             if (actionIndex != 2) ResetSendPanel();
@@ -175,12 +165,9 @@ namespace Main
             return amount >= 100 && amount <= 2000 && (amount % 100 == 0);
         }
 
-        // ==========================================
         // DEPOSIT
-        // ==========================================
         protected void btnSubmitDeposit_Click(object sender, EventArgs e)
         {
-            // BUG 2 FIX: Use inline error label instead of ShowAlert()
             lblDepositError.Visible = false;
             lblDepositError.Text = "";
 
@@ -232,12 +219,11 @@ namespace Main
             mvActions.ActiveViewIndex = -1;
         }
 
-        // ==========================================
+
         // WITHDRAW
-        // ==========================================
         protected void btnSubmitWithdraw_Click(object sender, EventArgs e)
         {
-            // BUG 2 FIX: Use inline error label instead of ShowAlert()
+            
             lblWithdrawError.Visible = false;
             lblWithdrawError.Text = "";
 
@@ -289,9 +275,7 @@ namespace Main
             mvActions.ActiveViewIndex = -1;
         }
 
-        // ==========================================
         // SEND CLOUDMONEY
-        // ==========================================
         protected void btnVerifyReceiver_Click(object sender, EventArgs e)
         {
             lblVerifyError.Visible = false;
@@ -419,9 +403,6 @@ namespace Main
                 pnlSendSuccess.Visible = true;
                 BindCurrentTable();
 
-                // BUG 3 FIX: Refresh bell badge after successful send so
-                // the receiver's notification badge updates on their next load
-                // and the sender's own dropdown stays current
                 RefreshNotifications();
             }
             else
@@ -437,9 +418,7 @@ namespace Main
             mvActions.ActiveViewIndex = -1;
         }
 
-        // ==========================================
         // DATA TABLES & FILTERING
-        // ==========================================
         protected void TableTab_Click(object sender, EventArgs e)
         {
             LinkButton clickedTab = (LinkButton)sender;

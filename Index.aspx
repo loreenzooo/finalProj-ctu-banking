@@ -11,7 +11,7 @@
     <form id="form1" runat="server">
         <div class="layout-wrapper">
 
-            <%-- ==================== SIDEBAR ==================== --%>
+            <%--  SIDEBAR  --%>
             <div class="sidebar">
                 <div class="sidebar-menu" style="margin-top: 20px;">
                     <asp:LinkButton ID="btnSidebarDashboard" runat="server" CssClass="menu-item active" OnClick="Sidebar_Click" CommandArgument="0">Dashboard</asp:LinkButton>
@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-            <%-- ==================== MAIN CONTENT ==================== --%>
+            <%--  MAIN CONTENT  --%>
             <div class="main-content">
 
                 <div class="top-header">
@@ -68,7 +68,7 @@
                 <div class="content-container">
                     <asp:MultiView ID="mvMainContent" runat="server" ActiveViewIndex="0">
 
-                        <%-- ==================== VIEW 0: DASHBOARD ==================== --%>
+                        <%-- VIEW 0: DASHBOARD --%>
                         <asp:View ID="vwDashboardStats" runat="server">
                             <h2 class="dashboard-title">My Dashboard</h2>
                             <div class="dashboard-profile-card">
@@ -106,7 +106,7 @@
                             </div>
                         </asp:View>
 
-                        <%-- ==================== VIEW 1: MANAGE FUNDS ==================== --%>
+                        <%-- VIEW 1: MANAGE FUNDS --%>
                         <asp:View ID="vwManageFunds" runat="server">
 
                             <div class="card action-container">
@@ -125,9 +125,8 @@
                                             <asp:Panel ID="pnlDepositForm" runat="server">
                                                 <p style="font-size:12px; color:#A0AABF;">Min: &#8369;100 | Max: &#8369;2,000 | Must be divisible by 100</p>
                                                 <asp:TextBox ID="txtDepositAmount" runat="server" CssClass="form-input" placeholder="Amount"></asp:TextBox>
-                                                <%-- Inline error label (replaces alert popup) --%>
+                                                <%-- Inline error label --%>
                                                 <asp:Label ID="lblDepositError" runat="server" CssClass="inline-error" Visible="false"></asp:Label>
-                                                <%-- Restyled confirm button --%>
                                                 <asp:Button ID="btnSubmitDeposit" runat="server" Text="Confirm Deposit" CssClass="btn-confirm-deposit" OnClick="btnSubmitDeposit_Click" />
                                             </asp:Panel>
                                             <asp:Panel ID="pnlDepositSuccess" runat="server" Visible="false" CssClass="txn-success-panel">
@@ -154,7 +153,6 @@
                                                 <asp:TextBox ID="txtWithdrawAmount" runat="server" CssClass="form-input" placeholder="Amount"></asp:TextBox>
                                                 <%-- Inline error label --%>
                                                 <asp:Label ID="lblWithdrawError" runat="server" CssClass="inline-error" Visible="false"></asp:Label>
-                                                <%-- Restyled confirm button --%>
                                                 <asp:Button ID="btnSubmitWithdraw" runat="server" Text="Confirm Withdraw" CssClass="btn-confirm-withdraw" OnClick="btnSubmitWithdraw_Click" />
                                             </asp:Panel>
                                             <asp:Panel ID="pnlWithdrawSuccess" runat="server" Visible="false" CssClass="txn-success-panel">
@@ -190,6 +188,7 @@
                                                     <asp:Label ID="lblReceiverName" runat="server" CssClass="info-value"></asp:Label>
                                                 </div>
                                             </asp:Panel>
+                                            <%-- SEND MONEY FORM--%>
                                             <asp:Panel ID="pnlSendMoneyForm" runat="server" Visible="false" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:10px;">
                                                 <p style="font-size:12px; color:#A0AABF;">Min: &#8369;100 | Max: &#8369;2,000 | Must be divisible by 100</p>
                                                 <asp:TextBox ID="txtSendAmount" runat="server" CssClass="form-input" placeholder="Amount"></asp:TextBox>
@@ -198,6 +197,7 @@
                                                 <asp:Button ID="btnSubmitSend" runat="server" Text="Send Money" CssClass="btn-submit" OnClick="btnSubmitSend_Click" />
                                                 <asp:Button ID="btnCancelSend" runat="server" Text="Cancel" CssClass="btn-filter" OnClick="btnCancelSend_Click" CausesValidation="false" />
                                             </asp:Panel>
+                                            <%-- PANEL SEND SUCCESS --%>
                                             <asp:Panel ID="pnlSendSuccess" runat="server" Visible="false" CssClass="txn-success-panel">
                                                 <div class="txn-success-icon">
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="#2DD253" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28">
@@ -220,11 +220,14 @@
                             </div>
 
                             <div class="card data-container">
+                                <%-- TAB BTNS STATEMENT DEPOSITS TRANSACTIONS--%>
                                 <div class="tab-buttons">
                                     <asp:LinkButton ID="btnTabStatement" runat="server" CssClass="tab-btn active" OnClick="TableTab_Click" CommandArgument="0">View Statement Of Account</asp:LinkButton>
                                     <asp:LinkButton ID="btnTabDeposits" runat="server" CssClass="tab-btn" OnClick="TableTab_Click" CommandArgument="1">My Deposits or Withdrawals</asp:LinkButton>
                                     <asp:LinkButton ID="btnTabTransactions" runat="server" CssClass="tab-btn" OnClick="TableTab_Click" CommandArgument="2">My Sent or Received Transactions</asp:LinkButton>
                                 </div>
+
+                                <%-- CALENDAR FILTER--%>
                                 <div class="centered-filter-form">
                                     <h3 class="filter-title"><asp:Label ID="lblFilterTitle" runat="server" Text="My Statement of Account"></asp:Label></h3>
                                     <div class="filter-row"><label>From</label><asp:TextBox ID="txtFromDate" runat="server" TextMode="Date" CssClass="filter-input-centered"></asp:TextBox></div>
@@ -283,6 +286,7 @@
         </div>
     </form>
 
+    <%-- NOTIFICATION BUTTON FOR SEND CLOUD MONEY --%>
     <script type="text/javascript">
         function toggleNotifDropdown() {
             var dropdown = document.getElementById('notifDropdown');
