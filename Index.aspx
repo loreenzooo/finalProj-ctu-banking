@@ -13,7 +13,7 @@
 
             <%--  SIDEBAR  --%>
             <div class="sidebar">
-                <div class="sidebar-menu" style="margin-top: 20px;">
+                <div class="sidebar-menu">
                     <asp:LinkButton ID="btnSidebarDashboard" runat="server" CssClass="menu-item active" OnClick="Sidebar_Click" CommandArgument="0">Dashboard</asp:LinkButton>
                     <asp:LinkButton ID="btnSidebarManage" runat="server" CssClass="menu-item" OnClick="Sidebar_Click" CommandArgument="1">Manage Funds</asp:LinkButton>
                     <asp:LinkButton ID="btnSidebarChangePassword" runat="server" CssClass="menu-item" OnClick="btnSidebarChangePassword_Click" CausesValidation="false">Change Password</asp:LinkButton>
@@ -31,13 +31,13 @@
 
                         <div class="notif-bell-wrapper">
                             <button type="button" class="notif-bell-btn" onclick="toggleNotifDropdown()" title="Notifications">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="notif-bell-icon">
                                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                                 </svg>
                                 <asp:Label ID="lblNotifBadge" runat="server" CssClass="notif-badge" Visible="false" Text=""></asp:Label>
                             </button>
-                            <div id="notifDropdown" class="notif-dropdown" style="display:none;">
+                            <div id="notifDropdown" class="notif-dropdown notif-dropdown-hidden">
                                 <div class="notif-dropdown-header">
                                     <span class="notif-dropdown-title">Notifications</span>
                                     <span class="notif-dropdown-subtitle">Recently received CloudMoney</span>
@@ -90,6 +90,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="dashboard-stats-row">
                                 <div class="stat-card balance-card">
                                     <div class="stat-info">
@@ -123,15 +124,14 @@
                                         <div class="action-panel">
                                             <h3>Deposit Funds</h3>
                                             <asp:Panel ID="pnlDepositForm" runat="server">
-                                                <p style="font-size:12px; color:#A0AABF;">Min: &#8369;100 | Max: &#8369;2,000 | Must be divisible by 100</p>
+                                                <p class="hint-text">Min: &#8369;100 | Max: &#8369;2,000 | Must be divisible by 100</p>
                                                 <asp:TextBox ID="txtDepositAmount" runat="server" CssClass="form-input" placeholder="Amount"></asp:TextBox>
-                                                <%-- Inline error label --%>
                                                 <asp:Label ID="lblDepositError" runat="server" CssClass="inline-error" Visible="false"></asp:Label>
                                                 <asp:Button ID="btnSubmitDeposit" runat="server" Text="Confirm Deposit" CssClass="btn-confirm-deposit" OnClick="btnSubmitDeposit_Click" />
                                             </asp:Panel>
                                             <asp:Panel ID="pnlDepositSuccess" runat="server" Visible="false" CssClass="txn-success-panel">
                                                 <div class="txn-success-icon">
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="#2DD253" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28">
+                                                    <svg viewBox="0 0 24 24" class="txn-success-svg">
                                                         <polyline points="20 6 9 17 4 12"></polyline>
                                                     </svg>
                                                 </div>
@@ -148,16 +148,15 @@
                                         <div class="action-panel">
                                             <h3>Withdraw Funds</h3>
                                             <asp:Panel ID="pnlWithdrawForm" runat="server">
-                                                <p style="color:#2DD253; font-weight:bold;">Current Balance: &#8369;<asp:Label ID="lblWithdrawBalance" runat="server"></asp:Label></p>
-                                                <p style="font-size:12px; color:#A0AABF;">Min: &#8369;100 | Max: &#8369;2,000 | Must be divisible by 100</p>
+                                                <p class="withdraw-balance-text">Current Balance: &#8369;<asp:Label ID="lblWithdrawBalance" runat="server"></asp:Label></p>
+                                                <p class="hint-text">Min: &#8369;100 | Max: &#8369;2,000 | Must be divisible by 100</p>
                                                 <asp:TextBox ID="txtWithdrawAmount" runat="server" CssClass="form-input" placeholder="Amount"></asp:TextBox>
-                                                <%-- Inline error label --%>
                                                 <asp:Label ID="lblWithdrawError" runat="server" CssClass="inline-error" Visible="false"></asp:Label>
                                                 <asp:Button ID="btnSubmitWithdraw" runat="server" Text="Confirm Withdraw" CssClass="btn-confirm-withdraw" OnClick="btnSubmitWithdraw_Click" />
                                             </asp:Panel>
                                             <asp:Panel ID="pnlWithdrawSuccess" runat="server" Visible="false" CssClass="txn-success-panel">
                                                 <div class="txn-success-icon">
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="#2DD253" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28">
+                                                    <svg viewBox="0 0 24 24" class="txn-success-svg">
                                                         <polyline points="20 6 9 17 4 12"></polyline>
                                                     </svg>
                                                 </div>
@@ -189,8 +188,8 @@
                                                 </div>
                                             </asp:Panel>
                                             <%-- SEND MONEY FORM--%>
-                                            <asp:Panel ID="pnlSendMoneyForm" runat="server" Visible="false" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:10px;">
-                                                <p style="font-size:12px; color:#A0AABF;">Min: &#8369;100 | Max: &#8369;2,000 | Must be divisible by 100</p>
+                                            <asp:Panel ID="pnlSendMoneyForm" runat="server" Visible="false" CssClass="send-money-form-panel">
+                                                <p class="hint-text">Min: &#8369;100 | Max: &#8369;2,000 | Must be divisible by 100</p>
                                                 <asp:TextBox ID="txtSendAmount" runat="server" CssClass="form-input" placeholder="Amount"></asp:TextBox>
                                                 <asp:TextBox ID="txtSendPassword" runat="server" CssClass="form-input" placeholder="Enter Your Password" TextMode="Password"></asp:TextBox>
                                                 <asp:Label ID="lblSendError" runat="server" CssClass="inline-error" Visible="false"></asp:Label>
@@ -200,7 +199,7 @@
                                             <%-- PANEL SEND SUCCESS --%>
                                             <asp:Panel ID="pnlSendSuccess" runat="server" Visible="false" CssClass="txn-success-panel">
                                                 <div class="txn-success-icon">
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="#2DD253" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28">
+                                                    <svg viewBox="0 0 24 24" class="txn-success-svg">
                                                         <polyline points="20 6 9 17 4 12"></polyline>
                                                     </svg>
                                                 </div>

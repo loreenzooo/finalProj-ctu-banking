@@ -34,6 +34,7 @@ html, body, form {
     display: flex;
     flex-direction: column;
     padding: 20px 0;
+    margin-top: 20px;
 }
 
 .menu-item {
@@ -154,6 +155,18 @@ html, body, form {
         border-color: #4163BF;
     }
 
+/* Notification bell SVG icon */
+.notif-bell-icon {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+}
+
 /* Red dot badge on bell */
 .notif-badge {
     position: absolute;
@@ -167,7 +180,7 @@ html, body, form {
     display: block;
 }
 
-/* Dropdown container */
+/* Dropdown container — hidden by default via class */
 .notif-dropdown {
     position: absolute;
     top: calc(100% + 10px);
@@ -179,6 +192,10 @@ html, body, form {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     z-index: 999;
     overflow: hidden;
+}
+
+.notif-dropdown-hidden {
+    display: none;
 }
 
 /* Dropdown header */
@@ -647,6 +664,33 @@ html, body, form {
     }
 
 /* ==========================================
+   Hint Text & Withdraw Balance
+   ========================================== */
+
+/* Small grey hint under form inputs (deposit, withdraw, send) */
+.hint-text {
+    font-size: 12px;
+    color: #A0AABF;
+    margin: 4px 0 8px 0;
+}
+
+/* Green bold current balance label in Withdraw panel */
+.withdraw-balance-text {
+    color: #2DD253;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+/* Send Money Form panel layout */
+.send-money-form-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ==========================================
    Receiver Info Panel
    ========================================== */
 .receiver-info-panel {
@@ -926,7 +970,7 @@ html, body, form {
         transform: translateY(0);
     }
 
-/* Withdraw confirm — gold, full width, visually distinct from deposit */
+/* Withdraw confirm — green, full width */
 .btn-confirm-withdraw {
     width: 100%;
     max-width: 300px;
@@ -952,6 +996,7 @@ html, body, form {
     .btn-confirm-withdraw:active {
         transform: translateY(0);
     }
+
 /* ==========================================
    Verify Receiver Row — stacked like Deposit/Withdraw
    ========================================== */
@@ -1033,6 +1078,17 @@ html, body, form {
     align-items: center;
     justify-content: center;
     margin-bottom: 8px;
+}
+
+/* Success checkmark SVG */
+.txn-success-svg {
+    width: 28px;
+    height: 28px;
+    fill: none;
+    stroke: #2DD253;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 /* "Deposit Successful!" / "Withdrawal Successful!" / "Money Sent!" */
