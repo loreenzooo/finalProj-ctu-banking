@@ -251,12 +251,11 @@ namespace Main.Classes
             DataTable dt = new DataTable();
             using (SqlConnection conn = DBConnection.GetConnection())
             {
-                // Build a single flat WHERE clause with all conditions.
+                
                 string whereClause = @"
                     WHERE (sender_account = @AccountNo OR receiver_account = @AccountNo)
                     AND transaction_type IN ('Deposit', 'Withdraw')";
 
-                // Inline type filter using literal SQL values
                 if (type == "D") whereClause += " AND transaction_type = 'Deposit'";
                 else if (type == "W") whereClause += " AND transaction_type = 'Withdraw'";
                 if (!string.IsNullOrEmpty(fromDate)) whereClause += " AND transaction_time >= @FromDate";

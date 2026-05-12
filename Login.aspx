@@ -66,7 +66,7 @@
 
                 <div class="field">
                     <label for="txtAccountNumber">Account Number</label>
-                    <asp:TextBox ID="txtAccountNumber" runat="server" CssClass="form-input" placeholder="e.g. 10042"></asp:TextBox>
+                    <asp:TextBox ID="txtAccountNumber" runat="server" CssClass="form-input" placeholder="e.g. 1000000001"></asp:TextBox>
                     <asp:RequiredFieldValidator ID="rfvAccountNumber" runat="server"
                         ControlToValidate="txtAccountNumber"
                         ErrorMessage="Account Number is required."

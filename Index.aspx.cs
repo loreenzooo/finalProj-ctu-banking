@@ -54,11 +54,13 @@ namespace Main
             if (viewIndex == 0) LoadDashboardStats();
         }
 
+        // Change password clicked
         protected void btnSidebarChangePassword_Click(object sender, EventArgs e)
         {
             Response.Redirect("ChangePassword.aspx");
         }
 
+        // Logout clicked
         protected void btnSidebarLogout_Click(object sender, EventArgs e)
         {
             Session.Clear();

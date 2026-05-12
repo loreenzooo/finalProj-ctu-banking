@@ -55,8 +55,8 @@ namespace Main
                 txtNewPassword.Text = "";
                 txtConfirmPassword.Text = "";
 
-                // Redirect to Index after 2 seconds
-                string script = "setTimeout(function(){ window.location = 'Index.aspx'; }, 2000);";
+                // Redirect to Login after 2 seconds
+                string script = "setTimeout(function(){ window.location = 'Login.aspx'; }, 2000);";
                 ClientScript.RegisterStartupScript(this.GetType(), "redirect", script, true);
             }
             else
